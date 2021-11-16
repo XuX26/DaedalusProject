@@ -5,7 +5,7 @@ using UnityEngine;
 public class Node
 {
     public Vector2 position;
-    [SerializeField] NodeType type;
+    public NodeType type;
     [SerializeField] Difficulty difficulty;
     [SerializeField, Range(1,4)] int nbrLinks;
 
