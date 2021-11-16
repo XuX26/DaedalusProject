@@ -5,15 +5,16 @@ using UnityEngine;
 public class DungeonManager : MonoBehaviour
 {
     public static DungeonManager instance;
-    public Dictionary<Vector2, Node> allNodes;
+    public Dictionary<Vector2, Node> allNodes = new Dictionary<Vector2, Node>();
 
 
     // Start is called before the first frame update
     void Awake()
     {
-        if (!instance)
-            instance = this;
-        else
-            Destroy(this);
+        if (instance != null && instance != this)
+        {
+            Destroy(instance);
+        }
+        instance = this;
     }
 }
