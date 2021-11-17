@@ -28,7 +28,6 @@ public class DungeonManager : MonoBehaviour
 
     private void Start()
     {
-        new DungeonGenerator().CreateDungeon(nbrCriticalRooms);
         //nbrAdditionalPath();
     }
 
