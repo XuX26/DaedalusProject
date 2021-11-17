@@ -22,7 +22,8 @@ public class Hud : MonoBehaviour
         while(Player.Instance.life > heartBar.childCount) {
             AddHearth();
         }
-        while (Player.Instance.life < heartBar.childCount) {
+        while (Player.Instance.life < heartBar.childCount && heartBar.childCount > 0)
+        {
             RemoveHearth();
         }
     }
