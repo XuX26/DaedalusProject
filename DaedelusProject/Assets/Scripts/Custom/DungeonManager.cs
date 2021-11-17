@@ -33,6 +33,6 @@ public class DungeonManager : MonoBehaviour
 
     void InitVar()
     {
-        nbrLock = Mathf.Clamp(nbrLock, 1, nbrCriticalRooms-2);
+        nbrLock = Mathf.Clamp(nbrLock, 1, nbrCriticalRooms-1);
     }
 }

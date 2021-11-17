@@ -158,20 +158,33 @@ public class DungeonGenerator : MonoBehaviour
         int maxNode = (int)(DungeonManager.instance.nbrCriticalRooms * DungeonManager.instance.maxSideSize);
         
         int lockLeft = DungeonManager.instance.nbrLock;
-        
+
+        Node lastNode = null;
+        Node newNode = null;
         while (currentCriticalNode.type != NodeType.END)
         {
+            // Check if sidePath is possible
+            // true = needKey
+            // false continue
             bool needKey = lockLeft >= criticalNodeLeft || Random.Range(0f,1f) > (float)lockLeft/criticalNodeLeft;
             
             prevPos = currentCriticalNode.position;
             
-            
             int nodeLeft = Random.Range(1, maxNode + 1);
             for (int i = 0; i < nodeLeft; i++)
             {
-                CreateNode(NodeType.DEFAULT);
+                // Check if sidePath is possible
+                // true : createNode
+                // false : add key
+                newNode = CreateNode(NodeType.DEFAULT);
+                if (newNode == null)
+                    break;
+                lastNode = newNode;
             }
-            currentCriticalNode = currentCriticalNode.links[0].nodes[1]; // get next critical node
+
+            lastNode = null;
+            newNode = null;
+            currentCriticalNode = currentCriticalNode.links[1].nodes[1]; // get next critical node
         }
     }
     
@@ -312,6 +325,12 @@ public class DungeonGenerator : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    void ReGenerateDungeon(string error)
+    {
+        Debug.LogWarning("Dungeon creation error : " + error + "\n Dungeon erasing!");
+        // reset var
     }
 }
 
