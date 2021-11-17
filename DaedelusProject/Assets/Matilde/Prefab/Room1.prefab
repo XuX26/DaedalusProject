@@ -802,6 +802,7 @@ GameObject:
   - component: {fileID: 8954252982945778219}
   - component: {fileID: 8954252982945778216}
   - component: {fileID: 8954252982945778221}
+  - component: {fileID: 8139686064790639490}
   m_Layer: 0
   m_Name: Room1
   m_TagString: Untagged
@@ -884,6 +885,21 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &8139686064790639490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8954252982945778217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a85ca353678806d46af876b1d2758d6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+  diffucultyLevel: 0
+  numberOfPossibleDoors: 2
 --- !u!1001 &38300986347563336
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -949,14 +965,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 94bbea04c40d9c144bedd2c8c4df140e, type: 3}
---- !u!1 &3474623683960140066 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3508380386316081258, guid: 94bbea04c40d9c144bedd2c8c4df140e, type: 3}
-  m_PrefabInstance: {fileID: 38300986347563336}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4866784784717580991 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4828519000341554167, guid: 94bbea04c40d9c144bedd2c8c4df140e, type: 3}
+  m_PrefabInstance: {fileID: 38300986347563336}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3474623683960140066 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3508380386316081258, guid: 94bbea04c40d9c144bedd2c8c4df140e, type: 3}
   m_PrefabInstance: {fileID: 38300986347563336}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1921461709258889867

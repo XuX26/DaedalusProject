@@ -18,26 +18,20 @@ public class DungeonGenerator : MonoBehaviour
 
     void CreateDungeon(int nbrRoom)
     {
-        GameObject nodeRoom;
+        GameObject nodeRoom = null;
         Node thisNode = CreateNode(NodeType.START);
-        DungeonManager.instance.allNodes.Add(thisNode.position, thisNode);
-        nodeRoom = Instantiate(roomPrefabs[Random.Range(0, roomPrefabs.Count)], new Vector3(thisNode.position.x, thisNode.position.y, 0), Quaternion.identity, dungeonParent);
+        InitRoom(ref nodeRoom, thisNode);
         nodeRoom.GetComponent<Room>().isStartRoom = true;
-        nodeRoom.GetComponent<Room>().position = thisNode.position;
-        InitDoors(nodeRoom, thisNode);
+
 
         for (int i = 1; i < nbrRoom - 1; ++i)
         {
             thisNode = CreateNode(NodeType.DEFAULT);
-            DungeonManager.instance.allNodes.Add(thisNode.position, thisNode);
-            nodeRoom = Instantiate(roomPrefabs[Random.Range(0, roomPrefabs.Count)], new Vector3(thisNode.position.x, thisNode.position.y, 0), Quaternion.identity, dungeonParent);
-            InitRoom(nodeRoom, thisNode);
+            InitRoom(ref nodeRoom, thisNode);
             InitDoors(nodeRoom, thisNode);
         }
         thisNode = CreateNode(NodeType.END);
-        DungeonManager.instance.allNodes.Add(thisNode.position, thisNode);
-        nodeRoom = Instantiate(roomPrefabs[Random.Range(0, roomPrefabs.Count)], new Vector3(thisNode.position.x, thisNode.position.y, 0), Quaternion.identity, dungeonParent);
-        InitRoom(nodeRoom, thisNode);
+        InitRoom(ref nodeRoom, thisNode);
         InitDoors(nodeRoom, thisNode);
     }
 
@@ -99,11 +93,53 @@ public class DungeonGenerator : MonoBehaviour
         
     }
 
-    void InitRoom(GameObject room, Node node)
+    void InitRoom(ref GameObject room, Node node)
     {
+        DungeonManager.instance.allNodes.Add(node.position, node);
+        List<GameObject> possibleRooms = new List<GameObject>();
+        switch (node.type)
+        {
+            case NodeType.START:
+                foreach (GameObject thisRoom in roomPrefabs)
+                {
+                    if(thisRoom.GetComponent<Configuration>().type == NodeType.START)
+                    {
+                        possibleRooms.Add(thisRoom);
+                    }
+                }
+                break;
+            case NodeType.DEFAULT:
+                foreach (GameObject thisRoom in roomPrefabs)
+                {
+                    if (thisRoom.GetComponent<Configuration>().type == NodeType.DEFAULT)
+                    {
+                        possibleRooms.Add(thisRoom);
+                    }
+                }
+                break;
+            case NodeType.END:
+                foreach (GameObject thisRoom in roomPrefabs)
+                {
+                    if (thisRoom.GetComponent<Configuration>().type == NodeType.DEFAULT)
+                    {
+                        if (thisRoom.GetComponent<Configuration>().numberOfPossibleDoors == 1)
+                        {
+                            possibleRooms.Add(thisRoom);
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        room = Instantiate(possibleRooms[Random.Range(0, possibleRooms.Count)], new Vector3(node.position.x, node.position.y, 0), Quaternion.identity, dungeonParent);
+        room.GetComponent<Room>().position = node.position;
+
         room.GetComponent<Room>().position = node.position;
         Vector3 size = room.GetComponent<Room>().GetLocalRoomBounds().size;
         room.transform.position = new Vector3(node.position.x * size.x, node.position.y * size.y, 0);
+
+        InitDoors(room, node);
     }
 
     void CreateCriticalRooms()
