@@ -11,7 +11,7 @@ public class DungeonGenerator : MonoBehaviour
 
     private void Start()
     {
-        CreateDungeon(5);
+        CreateDungeon(DungeonManager.instance.roomNbr);
     }
 
     void CreateDungeon(int nbrRoom)

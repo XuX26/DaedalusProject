@@ -6,7 +6,7 @@ public class DungeonManager : MonoBehaviour
 {
     public static DungeonManager instance;
     public Dictionary<Vector2, Node> allNodes = new Dictionary<Vector2, Node>();
-
+    public int roomNbr = 5;
 
     // Start is called before the first frame update
     void Awake()
