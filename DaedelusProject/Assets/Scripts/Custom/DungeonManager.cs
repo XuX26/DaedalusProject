@@ -6,7 +6,7 @@ using UnityEngine;
 public class DungeonManager : MonoBehaviour
 {
     public static DungeonManager instance;
-    public Dictionary<Vector2, Node> allNodes = new Dictionary<Vector2, Node>();
+    public Dictionary<Vector2Int, Node> allNodes = new Dictionary<Vector2Int, Node>();
 
     [Range(3, 20)] public int nbrCriticalRooms;
     [Range(2,10)] public int nbrAdditionalPath;

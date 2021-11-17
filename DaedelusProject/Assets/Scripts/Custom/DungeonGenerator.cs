@@ -7,7 +7,7 @@ public class DungeonGenerator : MonoBehaviour
     private List<int> possibleLinkPos = new List<int> { 0, 1, 2, 3 };
     private LinkPos prevLinkPos;
     private LinkPos dir;
-    Vector2 prevPos;
+    Vector2Int prevPos;
 
     private void Start()
     {
@@ -35,7 +35,7 @@ public class DungeonGenerator : MonoBehaviour
 
     void CreateAdditionalRooms()
     {
-        Node currentCriticalNode = DungeonManager.instance.allNodes[Vector2.zero];
+        Node currentCriticalNode = DungeonManager.instance.allNodes[Vector2Int.zero];
         int maxNode = (int)(DungeonManager.instance.nbrCriticalRooms * DungeonManager.instance.maxSideSize);
         
         while (currentCriticalNode.type != NodeType.END)
@@ -53,7 +53,7 @@ public class DungeonGenerator : MonoBehaviour
         {
             case NodeType.START:
                 node = new Node(1, NodeType.START, Difficulty.EASY);
-                node.position = Vector2.zero;
+                node.position = Vector2Int.zero;
                 //Link Pos
                 randIndex = Random.Range(0, possibleLinkPos.Count);
                 dir = (LinkPos)possibleLinkPos[randIndex];
@@ -77,16 +77,16 @@ public class DungeonGenerator : MonoBehaviour
                 switch (dir)
                 {
                     case LinkPos.UP:
-                        node.position = new Vector2(prevPos.x, prevPos.y + 1);
+                        node.position = new Vector2Int(prevPos.x, prevPos.y + 1);
                         break;
                     case LinkPos.DOWN:
-                        node.position = new Vector2(prevPos.x, prevPos.y - 1);
+                        node.position = new Vector2Int(prevPos.x, prevPos.y - 1);
                         break;
                     case LinkPos.LEFT:
-                        node.position = new Vector2(prevPos.x - 1, prevPos.y);
+                        node.position = new Vector2Int(prevPos.x - 1, prevPos.y);
                         break;
                     case LinkPos.RIGHT:
-                        node.position = new Vector2(prevPos.x + 1, prevPos.y);
+                        node.position = new Vector2Int(prevPos.x + 1, prevPos.y);
                         break;
                     default:
                         break;
@@ -98,16 +98,16 @@ public class DungeonGenerator : MonoBehaviour
                 switch (dir)
                 {
                     case LinkPos.UP:
-                        node.position = new Vector2(prevPos.x, prevPos.y + 1);
+                        node.position = new Vector2Int(prevPos.x, prevPos.y + 1);
                         break;
                     case LinkPos.DOWN:
-                        node.position = new Vector2(prevPos.x, prevPos.y - 1);
+                        node.position = new Vector2Int(prevPos.x, prevPos.y - 1);
                         break;
                     case LinkPos.LEFT:
-                        node.position = new Vector2(prevPos.x - 1, prevPos.y);
+                        node.position = new Vector2Int(prevPos.x - 1, prevPos.y);
                         break;
                     case LinkPos.RIGHT:
-                        node.position = new Vector2(prevPos.x + 1, prevPos.y);
+                        node.position = new Vector2Int(prevPos.x + 1, prevPos.y);
                         break;
                     default:
                         break;
@@ -117,7 +117,7 @@ public class DungeonGenerator : MonoBehaviour
                 List<LinkPos> invalids = new List<LinkPos>();
                 Node outNode;
                 bool nodeExists = false;
-                Vector2 toCheck = Vector2.zero;
+                Vector2Int toCheck = Vector2Int.zero;
                 int length = possibleLinkPos.Count;
                 for (int i = 0; i < length; ++i)
                 {
@@ -125,7 +125,7 @@ public class DungeonGenerator : MonoBehaviour
                     switch (check)
                     {
                         case LinkPos.UP:
-                            toCheck = new Vector2(prevPos.x, prevPos.y + 1);
+                            toCheck = new Vector2Int(prevPos.x, prevPos.y + 1);
                             nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out outNode);
                             if(nodeExists)
                             {
@@ -133,7 +133,7 @@ public class DungeonGenerator : MonoBehaviour
                             }
                             break;
                         case LinkPos.DOWN:
-                            toCheck = new Vector2(prevPos.x, prevPos.y - 1);
+                            toCheck = new Vector2Int(prevPos.x, prevPos.y - 1);
                             nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out outNode);
                             if (nodeExists)
                             {
@@ -141,7 +141,7 @@ public class DungeonGenerator : MonoBehaviour
                             }
                             break;
                         case LinkPos.LEFT:
-                            toCheck = new Vector2(prevPos.x - 1, prevPos.y);
+                            toCheck = new Vector2Int(prevPos.x - 1, prevPos.y);
                             nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out outNode);
                             if (nodeExists)
                             {
@@ -149,7 +149,7 @@ public class DungeonGenerator : MonoBehaviour
                             }
                             break;
                         case LinkPos.RIGHT:
-                            toCheck = new Vector2(prevPos.x + 1, prevPos.y);
+                            toCheck = new Vector2Int(prevPos.x + 1, prevPos.y);
                             nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out outNode);
                             if (nodeExists)
                             {
