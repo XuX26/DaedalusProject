@@ -11,10 +11,10 @@ public class DungeonGenerator : MonoBehaviour
 
     private void Start()
     {
-        CreateDungeon(DungeonManager.instance.roomNbr);
+        CreateDungeon(DungeonManager.instance.nbrCriticalRooms);
     }
 
-    void CreateDungeon(int nbrRoom)
+    public void CreateDungeon(int nbrRoom)
     {
         Node thisNode = CreateNode(NodeType.START);
         DungeonManager.instance.allNodes.Add(thisNode.position, thisNode);
@@ -32,19 +32,33 @@ public class DungeonGenerator : MonoBehaviour
     {
         // add codes of CreateDungeon
     }
+    
+    
 
     void CreateAdditionalRooms()
     {
         Node currentCriticalNode = DungeonManager.instance.allNodes[Vector2Int.zero];
+        int criticalNodeLeft = DungeonManager.instance.allNodes.Count-1;
         int maxNode = (int)(DungeonManager.instance.nbrCriticalRooms * DungeonManager.instance.maxSideSize);
+        
+        int lockLeft = DungeonManager.instance.nbrLock;
         
         while (currentCriticalNode.type != NodeType.END)
         {
+            bool needKey = lockLeft >= criticalNodeLeft || Random.Range(0f,1f) > (float)lockLeft/criticalNodeLeft;
+            
+            prevPos = currentCriticalNode.position;
+            
+            
             int nodeLeft = Random.Range(1, maxNode + 1);
-            Node currentNode;
+            for (int i = 0; i < nodeLeft; i++)
+            {
+                CreateNode(NodeType.DEFAULT);
+            }
+            currentCriticalNode = currentCriticalNode.links[0].nodes[1]; // get next critical node
         }
     }
-
+    
     Node CreateNode(NodeType type)
     {
         Node node = null;

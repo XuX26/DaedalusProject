@@ -9,11 +9,12 @@ public class DungeonManager : MonoBehaviour
     public Dictionary<Vector2Int, Node> allNodes = new Dictionary<Vector2Int, Node>();
 
     [Range(3, 20)] public int nbrCriticalRooms;
-    [Range(2,10)] public int nbrAdditionalPath;
-    [Range(0.25f,0.8f)] public float maxSideSize;
-    public int roomNbr = 5;
+    [Range(1,8)] public int nbrLock = 2;
+    [Range(0f, 1f)] public float coefSidePath;
+    [Range(0.25f,1f)] public float maxSideSize;
 
-    // Start is called before the first frame update
+    private bool RandomMadness; // TODO BONUS : full random mode, so generator random every nbr var
+
     void Awake()
     {
         if (instance != null && instance != this)
@@ -21,10 +22,18 @@ public class DungeonManager : MonoBehaviour
             Destroy(instance);
         }
         instance = this;
+        
+        InitVar();
     }
 
     private void Start()
     {
+        new DungeonGenerator().CreateDungeon(nbrCriticalRooms);
         //nbrAdditionalPath();
+    }
+
+    void InitVar()
+    {
+        nbrLock = Mathf.Clamp(nbrLock, 1, nbrCriticalRooms-2);
     }
 }

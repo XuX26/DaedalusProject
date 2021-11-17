@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Link : MonoBehaviour
 {
-    private bool hasLock = false;
-    private Node[] nodes = new Node[2];
+    public bool hasLock = false;
+    public Node[] nodes = new Node[2];
 
     Link()
     {

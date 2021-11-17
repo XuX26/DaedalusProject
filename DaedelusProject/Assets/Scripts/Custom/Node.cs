@@ -9,7 +9,7 @@ public class Node
     public Difficulty difficulty;
     [Range(1,4)] public int nbrLinks;
 
-    private Link[] links;
+    public Link[] links;
     public List<LinkPos> linksPosition = new List<LinkPos>();
 
     public Node(int newNbrLink, NodeType newType=NodeType.DEFAULT, Difficulty newDifficulty= Difficulty.MEDIUM)
