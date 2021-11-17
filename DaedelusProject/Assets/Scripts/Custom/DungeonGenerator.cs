@@ -5,7 +5,7 @@ using UnityEngine;
 public class DungeonGenerator : MonoBehaviour
 {
     private List<int> possibleLinkPos = new List<int> { 0, 1, 2, 3 };
-    private LinkPos prevLinkPos;
+    private Link prevLink;
     private LinkPos dir;
     private Vector2Int prevPos;
     [SerializeField] private Transform dungeonParent;
@@ -47,9 +47,9 @@ public class DungeonGenerator : MonoBehaviour
                 room.transform.GetChild(0).GetChild(i).GetComponent<Door>().SetOrientation();
             }
         }
-        foreach (LinkPos doorPos in node.linksPosition)
+        foreach (Link doorPos in node.links)
         {
-            switch (doorPos)
+            switch (doorPos.position)
             {
                 case LinkPos.UP:
                     foreach (Door curDoor in doors)
@@ -158,20 +158,33 @@ public class DungeonGenerator : MonoBehaviour
         int maxNode = (int)(DungeonManager.instance.nbrCriticalRooms * DungeonManager.instance.maxSideSize);
         
         int lockLeft = DungeonManager.instance.nbrLock;
-        
+
+        Node lastNode = null;
+        Node newNode = null;
         while (currentCriticalNode.type != NodeType.END)
         {
+            // Check if sidePath is possible
+            // true = needKey
+            // false continue
             bool needKey = lockLeft >= criticalNodeLeft || Random.Range(0f,1f) > (float)lockLeft/criticalNodeLeft;
             
             prevPos = currentCriticalNode.position;
             
-            
             int nodeLeft = Random.Range(1, maxNode + 1);
             for (int i = 0; i < nodeLeft; i++)
             {
-                CreateNode(NodeType.DEFAULT);
+                // Check if sidePath is possible
+                // true : createNode
+                // false : add key
+                newNode = CreateNode(NodeType.DEFAULT);
+                if (newNode == null)
+                    break;
+                lastNode = newNode;
             }
-            currentCriticalNode = currentCriticalNode.links[0].nodes[1]; // get next critical node
+
+            lastNode = null;
+            newNode = null;
+            currentCriticalNode = currentCriticalNode.links[1].nodes[1]; // get next critical node
         }
     }
     
@@ -179,6 +192,7 @@ public class DungeonGenerator : MonoBehaviour
     {
         Node node = null;
         int randIndex = 0;
+        Link newLink = null;
         switch (type)
         {
             case NodeType.START:
@@ -187,87 +201,40 @@ public class DungeonGenerator : MonoBehaviour
                 //Link Pos
                 randIndex = Random.Range(0, possibleLinkPos.Count);
                 dir = (LinkPos)possibleLinkPos[randIndex];
-                node.linksPosition.Add(dir);
+                newLink = new Link(dir, node);
+                node.links.Add(newLink);
                 //next node can't have inverse link pos (can't be left if prev was right)
-                RemoveInverseLinkPosFromPossibilities(randIndex);
+                RemoveInverseLinkPosFromPossibilities(node);
                 prevPos = node.position;
                 break;
             
             case NodeType.END:
                 node = new Node(1, NodeType.END);
                 SetNodePosition(node);
-                node.linksPosition.Add(prevLinkPos);
+                newLink = new Link(prevLink.position, node);
+                newLink.nodes[1] = prevLink.nodes[0];
+                node.links.Add(newLink);
                 break;
             
             case NodeType.DEFAULT:
                 node = new Node(2, NodeType.DEFAULT);
                 SetNodePosition(node);
-
-
-                List<LinkPos> invalids = new List<LinkPos>();
-                Node outNode;
-                bool nodeExists = false;
-                Vector2Int toCheck = Vector2Int.zero;
-                int length = possibleLinkPos.Count;
-                for (int i = 0; i < length; ++i)
-                {
-                    LinkPos check = (LinkPos)possibleLinkPos[i];
-                    switch (check)
-                    {
-                        case LinkPos.UP:
-                            toCheck = new Vector2Int(prevPos.x, prevPos.y + 1);
-                            nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out outNode);
-                            if(nodeExists)
-                            {
-                                invalids.Add(check);
-                            }
-                            break;
-                        case LinkPos.DOWN:
-                            toCheck = new Vector2Int(prevPos.x, prevPos.y - 1);
-                            nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out outNode);
-                            if (nodeExists)
-                            {
-                                invalids.Add(check);
-                            }
-                            break;
-                        case LinkPos.LEFT:
-                            toCheck = new Vector2Int(prevPos.x - 1, prevPos.y);
-                            nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out outNode);
-                            if (nodeExists)
-                            {
-                                invalids.Add(check);
-                            }
-                            break;
-                        case LinkPos.RIGHT:
-                            toCheck = new Vector2Int(prevPos.x + 1, prevPos.y);
-                            nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out outNode);
-                            if (nodeExists)
-                            {
-                                invalids.Add(check);
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
-
-                for (int i = 0; i < invalids.Count; ++i)
-                {
-                    possibleLinkPos.Remove((int)invalids[i]);
-                }
-                randIndex = Random.Range(0, possibleLinkPos.Count);
-                dir = (LinkPos)possibleLinkPos[randIndex];
-
-                for (int i = 0; i < invalids.Count; ++i)
-                {
-                    possibleLinkPos.Add((int)invalids[i]);
-                }
-                possibleLinkPos.Add((int)prevLinkPos);
-
-                node.linksPosition.Add(prevLinkPos);
-                node.linksPosition.Add(dir);
-                RemoveInverseLinkPosFromPossibilities(randIndex);
                 prevPos = node.position;
+
+                bool nodeIsValid = CheckAreaBeforeSettingLinkPos();
+
+                prevLink.nodes[1] = node;
+                newLink = new Link(prevLink.position, node);
+                newLink.nodes[1] = prevLink.nodes[0];
+                node.links.Add(newLink);
+                newLink = new Link(dir, node);
+                node.links.Add(newLink);
+
+                RemoveInverseLinkPosFromPossibilities(node);
+                if (!nodeIsValid)
+                {
+                    node = null;
+                }
                 break;
         }
         return node;
@@ -280,17 +247,92 @@ public class DungeonGenerator : MonoBehaviour
     /// <param name="firstNode"></param>
     /// 
 
-    void RemoveInverseLinkPosFromPossibilities(int index)
+
+    bool CheckAreaBeforeSettingLinkPos()
     {
-        if (possibleLinkPos[index] == 0 || possibleLinkPos[index] == 2)
+        int rand = 0;
+        List<LinkPos> invalids = new List<LinkPos>();
+        Node outNode;
+        bool nodeExists = false;
+        Vector2Int toCheck = Vector2Int.zero;
+        int length = possibleLinkPos.Count;
+        for (int i = 0; i < length; ++i)
         {
-            prevLinkPos = (LinkPos)possibleLinkPos[index] + 1;
-            possibleLinkPos.Remove(possibleLinkPos[index] + 1);
+            LinkPos check = (LinkPos)possibleLinkPos[i];
+            switch (check)
+            {
+                case LinkPos.UP:
+                    toCheck = new Vector2Int(prevPos.x, prevPos.y + 1);
+                    nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out outNode);
+                    if (nodeExists)
+                    {
+                        invalids.Add(check);
+                    }
+                    break;
+                case LinkPos.DOWN:
+                    toCheck = new Vector2Int(prevPos.x, prevPos.y - 1);
+                    nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out outNode);
+                    if (nodeExists)
+                    {
+                        invalids.Add(check);
+                    }
+                    break;
+                case LinkPos.LEFT:
+                    toCheck = new Vector2Int(prevPos.x - 1, prevPos.y);
+                    nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out outNode);
+                    if (nodeExists)
+                    {
+                        invalids.Add(check);
+                    }
+                    break;
+                case LinkPos.RIGHT:
+                    toCheck = new Vector2Int(prevPos.x + 1, prevPos.y);
+                    nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out outNode);
+                    if (nodeExists)
+                    {
+                        invalids.Add(check);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        for (int i = 0; i < invalids.Count; ++i)
+        {
+            possibleLinkPos.Remove((int)invalids[i]);
+        }
+        rand = Random.Range(0, possibleLinkPos.Count);
+        if(possibleLinkPos.Count == 0)
+        {
+            print("error no place");
+            return false;
+        }
+        dir = (LinkPos)possibleLinkPos[rand];
+
+        for (int i = 0; i < invalids.Count; ++i)
+        {
+            possibleLinkPos.Add((int)invalids[i]);
+        }
+        possibleLinkPos.Add((int)prevLink.position);
+        return true;
+    }
+
+
+    void RemoveInverseLinkPosFromPossibilities(Node node)
+    {
+        LinkPos invalidPos;
+        if ((int)dir == 0 || (int)dir == 2)
+        {
+            invalidPos = (LinkPos)((int)dir + 1);
+            prevLink = new Link(invalidPos, node);
+            possibleLinkPos.Remove((int)invalidPos);
         }
         else
         {
-            prevLinkPos = (LinkPos)possibleLinkPos[index] - 1;
-            possibleLinkPos.Remove(possibleLinkPos[index] - 1);
+            invalidPos = (LinkPos)((int)dir - 1);
+            prevLink = new Link(invalidPos, node);
+            possibleLinkPos.Remove((int)invalidPos);
         }
     }
     void SetNodePosition(Node currentNode)
@@ -312,6 +354,12 @@ public class DungeonGenerator : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    void ReGenerateDungeon(string error)
+    {
+        Debug.LogWarning("Dungeon creation error : " + error + "\n Dungeon erasing!");
+        // reset var
     }
 }
 
