@@ -7,11 +7,11 @@ public class DungeonManager : MonoBehaviour
 {
     public static DungeonManager instance;
     public Dictionary<Vector2, Node> allNodes = new Dictionary<Vector2, Node>();
+
     [Range(3, 20)] public int nbrCriticalRooms;
     [Range(2,10)] public int nbrAdditionalPath;
-
     [Range(0.25f,0.8f)] public float maxSideSize;
-
+    public int roomNbr = 5;
 
     // Start is called before the first frame update
     void Awake()
