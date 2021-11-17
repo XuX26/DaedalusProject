@@ -9,8 +9,8 @@ public class Node
     public Difficulty difficulty;
     [Range(1,4)] public int nbrLinks;
 
-    public Link[] links;
-    public List<LinkPos> linksPosition = new List<LinkPos>();
+    public List<Link> links = new List<Link>();
+    //public List<LinkPos> linksPosition = new List<LinkPos>();
 
     public Node(int newNbrLink, NodeType newType=NodeType.DEFAULT, Difficulty newDifficulty= Difficulty.MEDIUM)
     {
@@ -33,11 +33,4 @@ public enum Difficulty
     MEDIUM,
     HARD,
     INSANE
-}
-public enum LinkPos
-{
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT
 }
