@@ -35,6 +35,23 @@ public class DungeonGenerator : MonoBehaviour
         CreateNode(NodeType.END);
     }
 
+    void CreateCriticalRooms()
+    {
+        // add codes of CreateDungeon
+    }
+
+    void CreateAdditionalRooms()
+    {
+        Node currentCriticalNode = DungeonManager.instance.allNodes[Vector2.zero];
+        int maxNode = (int)(DungeonManager.instance.nbrCriticalRooms * DungeonManager.instance.maxSideSize);
+        
+        while (currentCriticalNode.type != NodeType.END)
+        {
+            int nodeLeft = Random.Range(1, maxNode + 1);
+            Node currentNode;
+        }
+    }
+
     Node CreateNode(NodeType type)
     {
         Node node = null;
@@ -43,7 +60,7 @@ public class DungeonGenerator : MonoBehaviour
         {
             case NodeType.START:
                 node = new Node(1, NodeType.START, Difficulty.EASY);
-                node.position = Vector2.zero;
+                node.position = Vector2Int.zero;
                 randIndex = Random.Range(0, possibleLinkPos.Count);
                 node.linksPosition.Add((LinkPos)possibleLinkPos[randIndex]);
                 if(possibleLinkPos[randIndex] == 0 || possibleLinkPos[randIndex] == 2)
@@ -69,8 +86,6 @@ public class DungeonGenerator : MonoBehaviour
 
     void CreateLink(Node firstNode)
     {
-        
-        
     }
     
 }

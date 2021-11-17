@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Node
 {
-    public Vector2 position;
-    [SerializeField] NodeType type;
-    [SerializeField] Difficulty difficulty;
-    [SerializeField, Range(1,4)] int nbrLinks;
+    public Vector2Int position;
+    public NodeType type;
+    public Difficulty difficulty;
+    [Range(1,4)] public int nbrLinks;
 
     private Link[] links;
     public List<LinkPos> linksPosition = new List<LinkPos>();
