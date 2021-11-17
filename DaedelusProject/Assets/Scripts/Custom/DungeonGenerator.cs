@@ -155,6 +155,7 @@ public class DungeonGenerator : MonoBehaviour
                 {
                     possibleLinkPos.Add((int)invalids[i]);
                 }
+                possibleLinkPos.Add((int)prevLinkPos);
 
                 node.linksPosition.Add(prevLinkPos);
                 node.linksPosition.Add(dir); 
