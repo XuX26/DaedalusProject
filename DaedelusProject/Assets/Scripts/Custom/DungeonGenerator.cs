@@ -10,6 +10,7 @@ public class DungeonGenerator : MonoBehaviour
     private Vector2Int prevPos;
     [SerializeField] private Transform dungeonParent;
     [SerializeField] private List<GameObject> roomPrefabs = new List<GameObject>();
+    private GameObject prevRoom = null;
 
     private void Start()
     {
@@ -102,7 +103,7 @@ public class DungeonGenerator : MonoBehaviour
             case NodeType.START:
                 foreach (GameObject thisRoom in roomPrefabs)
                 {
-                    if(thisRoom.GetComponent<Configuration>().type == NodeType.START)
+                    if(thisRoom != prevRoom && thisRoom.GetComponent<Configuration>().type == NodeType.START)
                     {
                         possibleRooms.Add(thisRoom);
                     }
@@ -111,7 +112,7 @@ public class DungeonGenerator : MonoBehaviour
             case NodeType.DEFAULT:
                 foreach (GameObject thisRoom in roomPrefabs)
                 {
-                    if (thisRoom.GetComponent<Configuration>().type == NodeType.DEFAULT)
+                    if (thisRoom != prevRoom && thisRoom.GetComponent<Configuration>().type == NodeType.DEFAULT)
                     {
                         possibleRooms.Add(thisRoom);
                     }
@@ -132,7 +133,8 @@ public class DungeonGenerator : MonoBehaviour
             default:
                 break;
         }
-        room = Instantiate(possibleRooms[Random.Range(0, possibleRooms.Count)], new Vector3(node.position.x, node.position.y, 0), Quaternion.identity, dungeonParent);
+        prevRoom = possibleRooms[Random.Range(0, possibleRooms.Count)];
+        room = Instantiate(prevRoom, new Vector3(node.position.x, node.position.y, 0), Quaternion.identity, dungeonParent);
         room.GetComponent<Room>().position = node.position;
 
         room.GetComponent<Room>().position = node.position;
@@ -311,11 +313,6 @@ public class DungeonGenerator : MonoBehaviour
                 break;
         }
     }
-
-    void CreateLink(Node firstNode)
-    {
-    }
-    
 }
 
 
