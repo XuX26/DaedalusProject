@@ -182,7 +182,20 @@ public class Player : MonoBehaviour {
         switch (_state)
         {
             case STATE.STUNNED: _currentMovement = stunnedMovement; break;
-            case STATE.DEAD: EndBlink(); break;
+            case STATE.DEAD:
+                {
+                    EndBlink();
+                    Room startRoom = Room.allRooms.Find(x => x.position == Vector2Int.zero);
+                    Player.Instance.transform.position = startRoom.GetWorldRoomBounds().center;
+                    startRoom.OnEnterRoom();
+                    life = lifeMax;
+                    for (int i = 0; i < life; ++i)
+                    {
+                        Hud.Instance.AddHearth();
+                    }
+                    SetState(STATE.IDLE);
+                }
+                break;
             default: _currentMovement = defaultMovement; break;
         }
 
