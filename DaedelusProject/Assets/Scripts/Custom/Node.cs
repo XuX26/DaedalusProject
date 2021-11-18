@@ -22,7 +22,7 @@ public class Node
         type = newType;
     }
     
-    public Node(Vector2Int newPosition, NodeType newType=NodeType.DEFAULT, Difficulty newDifficulty= Difficulty.MEDIUM)
+    public Node(Vector2Int newPosition, NodeType newType=NodeType.DEFAULT, int newDifficulty = 4)
     {
         position = newPosition;
         difficulty = newDifficulty;
