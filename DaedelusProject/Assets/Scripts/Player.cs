@@ -385,9 +385,11 @@ public class Player : MonoBehaviour {
                         ++nextMilestone;
                     }
                 }
+                transform.position += (room.GetWorldRoomBounds().center - _room.GetWorldRoomBounds().center).normalized;
             }
             InterfaceManager.instance.ShowSelectionPanel(true);
         }
+
         DungeonGenerator.instance.currentRoom = room;
         _room = room;
 	}

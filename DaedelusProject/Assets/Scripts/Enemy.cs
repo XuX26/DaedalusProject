@@ -93,6 +93,10 @@ public class Enemy : MonoBehaviour
 	private void OnDestroy()
 	{
 		allEnemies.Remove(this);
+        if(allEnemies.Count == 0)
+        {
+            DungeonGenerator.instance.ReturnDoorToState();
+        }
 	}
 
 	private void Start()

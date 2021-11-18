@@ -26,6 +26,8 @@ public class Door : MonoBehaviour {
 
 	private Room _room = null;
 
+    public STATE previousState;
+
 	public void Awake()
 	{
 		_room = GetComponentInParent<Room>();
@@ -46,7 +48,7 @@ public class Door : MonoBehaviour {
 		{
 			SetState(STATE.SECRET);
 		}
-	}
+    }
 
     public void SetOrientation()
     {
