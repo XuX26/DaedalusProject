@@ -58,7 +58,7 @@ public class DungeonGenerator : MonoBehaviour
     void CreateDungeonBis(int nbrRoom)
     {
         CreateCriticalPath(nbrRoom);
-        //CreateAllSidePathBis();
+        CreateAllSidePathBis();
         InitRooms();
     }
     
@@ -73,21 +73,20 @@ public class DungeonGenerator : MonoBehaviour
             lastNode = CreateNodeBis(NodeType.DEFAULT, lastNode);
             if (lastNode == null) // need exception ?!
                 ReGenerateDungeon(new string("Attempt to create a critical node failed"));
-            DungeonManager.instance.allNodes.Add(lastNode.position, lastNode);
         }
         
-        lastNode = CreateNodeBis(NodeType.END, lastNode);
-        DungeonManager.instance.allNodes.Add(lastNode.position, lastNode);
+        CreateNodeBis(NodeType.END, lastNode);
     }
     
     void CreateAllSidePathBis()
     {
         Node currentCriticalNode = DungeonManager.instance.allNodes[Vector2Int.zero].links[0].nodes[1];
-        int criticalNodeLeft = DungeonManager.instance.allNodes.Count-1;
+        int criticalNodeLeft = DungeonManager.instance.allNodes.Count-2;
         int lockLeft = DungeonManager.instance.nbrLock;
         int maxNode = (int)(DungeonManager.instance.nbrCriticalRooms * DungeonManager.instance.maxSideSize);
         
-        while (currentCriticalNode.type != NodeType.END)
+        //while (currentCriticalNode.type != NodeType.END)
+        while (criticalNodeLeft > 0)
         {
             prevPos = currentCriticalNode.position; // still used ?
 
@@ -95,23 +94,28 @@ public class DungeonGenerator : MonoBehaviour
             if (currentCriticalNode.freeLinks.Count == 0)
             {
                 currentCriticalNode = currentCriticalNode.links[1].nodes[1]; // get next critical node
+                criticalNodeLeft--; // to del
                 continue;
             }
             
-            bool needKey = lockLeft >= criticalNodeLeft || Random.Range(0f,1f) >= (float)lockLeft/criticalNodeLeft;
+            bool needKey = lockLeft > 0 && (lockLeft >= criticalNodeLeft || Random.Range(0f,1f) <= (float)lockLeft/criticalNodeLeft);
             
             if (needKey || (Random.Range(0f, 1f) < DungeonManager.instance.coefSidePath))
             {
                 Node lastNode = CreateSidePath(Random.Range(1, maxNode + 1), currentCriticalNode);
+                Debug.Log("New Side path created");
                 if (needKey)
                 {
                     lastNode.haveKey = true;
                     currentCriticalNode.links[1].hasLock = true;
                     lockLeft--;
+                    Debug.Log("Key added");
                 }
             }
             currentCriticalNode = currentCriticalNode.links[1].nodes[1];
-            Debug.Log("New Side path created");
+            criticalNodeLeft--; //to del
+            if (currentCriticalNode.type == NodeType.END)
+                Debug.Log("Is the last Node, criticalNodeLeft = " + criticalNodeLeft);
         }
     }
 
@@ -132,15 +136,6 @@ public class DungeonGenerator : MonoBehaviour
     {
         Node newNode = null;
 
-        // if (type == NodeType.START)
-        // {
-        //     newNode = new Node(Vector2Int.zero, type);
-        //     prevLink = null;
-        //     //randIndex = Random.Range(0, newNode.freeLinks.Count);
-        //     //dir = (LinkPos)newNode.freeLinks[randIndex];
-        //     //prevLink = newNode.AddNewLink(dir);
-        // }
-
         CheckAndUpdateAvailableLinkList(nodeFrom);
         int nbrFreeLinks = nodeFrom.freeLinks.Count;
         if (nbrFreeLinks == 0)
@@ -153,6 +148,7 @@ public class DungeonGenerator : MonoBehaviour
         newNode = new Node(newNodePos);
         LinkTwoNode(nodeFrom, newNode, dir);
             
+        DungeonManager.instance.allNodes.Add(newNode.position, newNode);
         prevPos = newNodePos; // not even used ?
         return newNode;
     }
@@ -168,7 +164,7 @@ public class DungeonGenerator : MonoBehaviour
     // It update the freeLinks list of the node
     void CheckAndUpdateAvailableLinkList(Node node)
     {
-        Vector2Int toCheck = Vector2Int.zero;
+        Vector2Int toCheck = node.position;
         Node sideNode = null;
         bool nodeExists = false;
 
@@ -178,19 +174,19 @@ public class DungeonGenerator : MonoBehaviour
             switch (freeLink)
             {
                 case 0: //UP
-                    toCheck = new Vector2Int(prevPos.x, prevPos.y + 1);
+                    toCheck.y++;// = new Vector2Int(prevPos.x, prevPos.y + 1);
                     nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out sideNode);
                     break;
                 case 1: // DOWN
-                    toCheck = new Vector2Int(prevPos.x, prevPos.y - 1);
+                    toCheck.y--;// = new Vector2Int(prevPos.x, prevPos.y - 1);
                     nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out sideNode);
                     break;
                 case 2: // LEFT
-                    toCheck = new Vector2Int(prevPos.x - 1, prevPos.y);
+                    toCheck.x--;// = new Vector2Int(prevPos.x - 1, prevPos.y);
                     nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out sideNode);
                     break;
                 case 3: // RIGHT
-                    toCheck = new Vector2Int(prevPos.x + 1, prevPos.y);
+                    toCheck.x++;// = new Vector2Int(prevPos.x + 1, prevPos.y);
                     nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out sideNode);
                     break;
             }
@@ -201,6 +197,8 @@ public class DungeonGenerator : MonoBehaviour
                 sideNode.freeLinks.Remove(GetMirrorPos(freeLink)); // remove the freelink also in the next node
             }
             nodeExists = false;
+            sideNode = null;
+            toCheck = node.position;
         }
     }
       
@@ -712,44 +710,6 @@ public class DungeonGenerator : MonoBehaviour
             print("TODO block access next door");
         }
     }
-    void CreateAdditionalRooms()
-    {
-        // TODO : change currentCriticalNode to first node and adapt code
-        Node currentCriticalNode = DungeonManager.instance.allNodes[Vector2Int.zero].links[0].nodes[1];
-        int criticalNodeLeft = DungeonManager.instance.allNodes.Count-1;
-        int maxNode = (int)(DungeonManager.instance.nbrCriticalRooms * DungeonManager.instance.maxSideSize);
-        
-        int lockLeft = DungeonManager.instance.nbrLock;
-
-        bool canAddNewDoor;
-        while (currentCriticalNode.type != NodeType.END)
-        {
-            canAddNewDoor = CheckAreaBeforeSettingLinkPos();
-            if (!canAddNewDoor)
-            {
-                currentCriticalNode = currentCriticalNode.links[1].nodes[1]; // get next critical node
-                continue;
-            }
-
-            bool needKey = lockLeft >= criticalNodeLeft || Random.Range(0f,1f) > (float)lockLeft/criticalNodeLeft;
-            
-            prevPos = currentCriticalNode.position;
-            int nodeLeft = Random.Range(1, maxNode + 1);
-            while (nodeLeft > 0)
-            {
-                canAddNewDoor = CheckAreaBeforeSettingLinkPos();
-                if (canAddNewDoor)
-                    CreateNode(NodeType.DEFAULT);
-
-                // else
-                // {
-                //     if (needKey)
-                //         // add key to the current node
-                // }
-                nodeLeft--;
-            }
-        }
-    }
     
     Node CreateNode(NodeType type)
     {
@@ -895,6 +855,7 @@ public class DungeonGenerator : MonoBehaviour
             possibleLinkPos.Remove((int)invalidPos);
         }
     }
+    
     void SetNodePosition(Node currentNode)
     {
         switch (dir)
@@ -921,7 +882,7 @@ public class DungeonGenerator : MonoBehaviour
         Debug.LogWarning("Dungeon creation error : " + error + "\n Dungeon erasing!");
         
         DungeonManager.instance.allNodes.Clear();
-        CreateDungeon(DungeonManager.instance.nbrCriticalRooms);
+        CreateDungeonBis(DungeonManager.instance.nbrCriticalRooms);
     }
 }
 
