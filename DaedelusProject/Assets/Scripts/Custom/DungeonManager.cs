@@ -26,11 +26,6 @@ public class DungeonManager : MonoBehaviour
         InitVar();
     }
 
-    private void Start()
-    {
-        //nbrAdditionalPath();
-    }
-
     void InitVar()
     {
         nbrLock = Mathf.Clamp(nbrLock, 1, nbrCriticalRooms-1);

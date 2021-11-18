@@ -8,6 +8,7 @@ public class Node
     public NodeType type;
     public Difficulty difficulty;
     [Range(1,4)] public int nbrLinks;
+    public bool haveKey;
 
     public List<Link> links = new List<Link>();
     //public List<LinkPos> linksPosition = new List<LinkPos>();
