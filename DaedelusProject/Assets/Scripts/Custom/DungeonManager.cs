@@ -15,7 +15,7 @@ public class DungeonManager : MonoBehaviour
     [Range(0.25f,1f)] public float maxSideSizeCoef = 0.25f;
     [Range(1,5)] public int minSideSize = 2;
 
-    
+    public Link secretLink;
     public Node currentNode;
 
     private bool RandomMadness; // TODO BONUS : full random mode, so generator random every nbr var

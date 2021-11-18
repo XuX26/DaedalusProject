@@ -52,5 +52,6 @@ public enum NodeType
 {
     START,
     DEFAULT,
-    END
+    END,
+    SECRET
 }

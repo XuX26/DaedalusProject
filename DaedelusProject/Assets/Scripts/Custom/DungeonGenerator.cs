@@ -83,6 +83,7 @@ public class DungeonGenerator : MonoBehaviour
         Node currentCriticalNode = DungeonManager.instance.allNodes[Vector2Int.zero].links[0].nodes[1];
         int criticalNodeLeft = DungeonManager.instance.allNodes.Count-2;
         int lockLeft = DungeonManager.instance.nbrLock;
+        bool secretRoomCreated = false;
         int maxNode = (int)(DungeonManager.instance.nbrCriticalRooms * DungeonManager.instance.maxSideSizeCoef);
         int minNode = DungeonManager.instance.minSideSize;
         
@@ -114,6 +115,14 @@ public class DungeonGenerator : MonoBehaviour
                     Debug.Log("Key added");
                 }
             }
+
+            if (lockLeft <= 1 && secretRoomCreated == false && currentCriticalNode.freeLinks.Count > 0) // need to recheck
+            {
+                Node newNode = CreateNodeBis(NodeType.SECRET, currentCriticalNode);
+                secretRoomCreated = newNode != null;
+                Debug.Log("Attempt to create Secret Room | result : = " + secretRoomCreated);
+            }
+            
             currentCriticalNode = currentCriticalNode.links[1].nodes[1];
             criticalNodeLeft--; //to del
             if (currentCriticalNode.type == NodeType.END)
@@ -121,11 +130,6 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
-    void CreateSecretRoom()
-    {
-        
-    }
-    
     void InitRooms()
     {
         GameObject nodeRoom = null;
@@ -152,7 +156,7 @@ public class DungeonGenerator : MonoBehaviour
         randIndex = Random.Range(0, nbrFreeLinks);
         dir = (LinkPos)nodeFrom.freeLinks[randIndex];
         Vector2Int newNodePos = GetPosOfNextNode(nodeFrom.position, (int)dir);
-        newNode = new Node(newNodePos);
+        newNode = new Node(newNodePos, type);
         LinkTwoNode(nodeFrom, newNode, dir);
             
         DungeonManager.instance.allNodes.Add(newNode.position, newNode);
@@ -161,9 +165,16 @@ public class DungeonGenerator : MonoBehaviour
     }
 
     // Add Create links for both nodes
-    void LinkTwoNode(Node from, Node next, LinkPos dir)
+    void LinkTwoNode(Node from, Node next, LinkPos dir, bool isNewSecretRoom = false)
     {
-        from.AddNewLink(next, dir);
+        if (isNewSecretRoom)
+        {
+            DungeonManager.instance.secretLink = from.AddNewLink(next, dir);
+            DungeonManager.instance.secretLink.isSecret = true;
+        }
+        else
+            from.AddNewLink(next, dir);
+
         next.AddNewLink(from, (LinkPos)GetMirrorPos((int)dir));
     }
 

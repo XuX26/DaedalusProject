@@ -5,6 +5,7 @@ using UnityEngine;
 public class Link
 {
     public bool hasLock = false;
+    public bool isSecret = false;
     public Node[] nodes = new Node[2];
     public LinkPos position;
 
