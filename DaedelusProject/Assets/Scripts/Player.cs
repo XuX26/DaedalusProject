@@ -446,7 +446,7 @@ public class Player : MonoBehaviour {
             case 3:
             case 7:
             case 11:
-                UnlockKeyPiece();
+                UnlockKeyPiece(rewardIndex);
                 break;
             case 4:
             case 9:
