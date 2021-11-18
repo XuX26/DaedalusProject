@@ -173,7 +173,6 @@ public class DungeonGenerator : MonoBehaviour
             default:
                 break;
         }
-        prevRoom = possibleRooms[Random.Range(0, possibleRooms.Count)];
         for (int i = 0; i < roomsSelected.Length; ++i)
         {
             if (possibleRooms.Count > 0) {
@@ -185,6 +184,7 @@ public class DungeonGenerator : MonoBehaviour
 
     public void AssignRoom(GameObject chosenRoom)
     {
+        prevRoom = chosenRoom;
         currentRoom.name = chosenRoom.name;
         for (int i = 0; i < chosenRoom.transform.GetChild(0).childCount; ++i)
         {
