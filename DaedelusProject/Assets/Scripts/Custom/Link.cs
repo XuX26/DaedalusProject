@@ -13,6 +13,8 @@ public class Link
         position = newPos;
         nodes[0] = parentNode;
     }
+
+    
 }
 public enum LinkPos
 {

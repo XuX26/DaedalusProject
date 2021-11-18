@@ -126,7 +126,31 @@ public class Player : MonoBehaviour {
 					Room room = collider.gameObject.GetComponentInParent<Room>();
 					if(room && room != _room)
 					{
+                        Door thisDoor = collider.GetComponent<Door>();
 						room.OnEnterRoom();
+                        bool hello = DungeonManager.instance.allNodes.TryGetValue(room.position, out DungeonManager.instance.currentNode);
+                        if (!hello)
+                        {
+                            print("there's a problem");
+                        }
+                        //Vector2Int nextNode = Vector2Int.zero;
+                        //switch (thisDoor.Orientation)
+                        //{
+                        //    case Utils.ORIENTATION.NONE:
+                        //        break;
+                        //    case Utils.ORIENTATION.NORTH:
+                        //        nextNode = room
+                        //        break;
+                        //    case Utils.ORIENTATION.EAST:
+                        //        break;
+                        //    case Utils.ORIENTATION.SOUTH:
+                        //        break;
+                        //    case Utils.ORIENTATION.WEST:
+                        //        break;
+                        //    default:
+                        //        break;
+                        //}
+                        //Node pos = Doororient+RoomPos
 					}
 				}
 			}
@@ -313,7 +337,8 @@ public class Player : MonoBehaviour {
 
 	public void EnterRoom(Room room)
 	{
-		_room = room;
+        InterfaceManager.instance.ShowSelectionPanel(true);
+        _room = room;
 	}
 
     private void OnTriggerEnter2D(Collider2D collision)
