@@ -123,7 +123,6 @@ public class DungeonGenerator : MonoBehaviour
 
     public void ChooseThreeRooms(ref GameObject[] roomsSelected, Node node)
     {
-        print("hello " + node.type);
         for (int i = 0; i < roomsSelected.Length; ++i)
         {
             roomsSelected[i] = null;
@@ -136,7 +135,17 @@ public class DungeonGenerator : MonoBehaviour
                 {
                     if (thisRoom != prevRoom && thisRoom.GetComponent<Configuration>().type == NodeType.START)
                     {
-                        possibleRooms.Add(thisRoom);
+                        if (thisRoom.GetComponent<Configuration>().isFlexible)
+                        {
+                            possibleRooms.Add(thisRoom);
+                        }
+                        else
+                        {
+                            if(node.links.Count-1 == thisRoom.GetComponent<Configuration>().numberOfPossibleDoors)
+                            {
+                                possibleRooms.Add(thisRoom);
+                            }
+                        }
                     }
                 }
                 break;
@@ -181,12 +190,12 @@ public class DungeonGenerator : MonoBehaviour
         {
             if (!chosenRoom.transform.GetChild(0).GetChild(i).CompareTag("Door"))
             {
-                Instantiate(chosenRoom.transform.GetChild(0).GetChild(i), currentRoom.transform);
+                Instantiate(chosenRoom.transform.GetChild(0).GetChild(i), currentRoom.transform.GetChild(0));
             }
         }
         for (int i = 0; i < chosenRoom.transform.GetChild(1).childCount; ++i)
         {
-            Instantiate(chosenRoom.transform.GetChild(1).GetChild(i), currentRoom.transform);
+            Instantiate(chosenRoom.transform.GetChild(1).GetChild(i), currentRoom.transform.GetChild(1));
         }
     }
 
@@ -244,7 +253,7 @@ public class DungeonGenerator : MonoBehaviour
         switch (type)
         {
             case NodeType.START:
-                node = new Node(1, NodeType.START, Difficulty.EASY);
+                node = new Node(1, NodeType.START, 1);
                 node.position = Vector2Int.zero;
                 //Link Pos
                 randIndex = Random.Range(0, possibleLinkPos.Count);

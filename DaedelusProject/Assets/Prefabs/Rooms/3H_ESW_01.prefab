@@ -561,7 +561,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
-  diffucultyLevel: 0
+  diffucultyLevel: 1
   numberOfPossibleDoors: 2
 --- !u!1 &1419342440391603968
 GameObject:
