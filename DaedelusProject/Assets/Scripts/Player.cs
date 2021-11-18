@@ -76,6 +76,10 @@ public class Player : MonoBehaviour {
     public float maxExperience = 100;
     public float currentExperience = 0;
     public float fivePercent = 0;
+    private int nextMilestone = 1;
+
+    private int nbKeyPiece = 0;
+    private bool hasSecretKey = false;
 
 
     // Input attributes
@@ -107,7 +111,7 @@ public class Player : MonoBehaviour {
     {
         SetState(STATE.IDLE);
         fivePercent = (maxExperience * 5) / 100;
-        currentExperience = fivePercent + (fivePercent * 0.5f);
+        currentExperience = fivePercent;
     }
 
     // Update is called once per frame
@@ -200,11 +204,7 @@ public class Player : MonoBehaviour {
                     Room startRoom = Room.allRooms.Find(x => x.position == Vector2Int.zero);
                     Player.Instance.transform.position = startRoom.GetWorldRoomBounds().center;
                     startRoom.OnEnterRoom();
-                    life = lifeMax;
-                    for (int i = 0; i < life; ++i)
-                    {
-                        Hud.Instance.AddHearth();
-                    }
+                    FullHeal();
                     SetState(STATE.IDLE);
                 }
                 break;
@@ -215,6 +215,15 @@ public class Player : MonoBehaviour {
         if (!CanMove())
         {
             _direction = Vector2.zero;
+        }
+    }
+
+    void FullHeal()
+    {
+        life = lifeMax;
+        for (int i = 0; i < life; ++i)
+        {
+            Hud.Instance.AddHearth();
         }
     }
 
@@ -348,7 +357,7 @@ public class Player : MonoBehaviour {
             {
                 print("there's a problem");
             }
-            if (_room != null && !_room.isStartRoom)
+            if (_room != null)
             {
                 if (_room.GetComponent<Configuration>().diffucultyLevel < 4)
                 {
@@ -357,7 +366,13 @@ public class Player : MonoBehaviour {
                 }
                 else
                 {
-                    currentExperience = Mathf.Clamp(currentExperience + (_room.GetComponent<Configuration>().diffucultyLevel * (fivePercent * 0.5f)), 0, maxExperience);
+                    currentExperience = Mathf.Clamp(currentExperience + ((_room.GetComponent<Configuration>().diffucultyLevel * (fivePercent * 0.5f)) / 3), 0, maxExperience);
+                }
+                while (currentExperience >= nextMilestone * (maxExperience*(100/13)/100))
+                {
+                    print("passe : " + nextMilestone);
+                    UnlockReward(nextMilestone);
+                    ++nextMilestone;
                 }
             }
             InterfaceManager.instance.ShowSelectionPanel(true);
@@ -365,6 +380,50 @@ public class Player : MonoBehaviour {
         DungeonGenerator.instance.currentRoom = room;
         _room = room;
 	}
+
+    void UnlockReward(int rewardIndex)
+    {
+        switch (rewardIndex)
+        {
+            case 1:
+                FullHeal();
+                break;
+            case 2 :
+            case 6 :
+            case 12:
+                attackCooldown -= 0.1f;
+                break;
+            case 3:
+            case 7:
+            case 11:
+                UnlockKeyPiece();
+                break;
+            case 4:
+            case 9:
+                {
+                    lifeMax++;
+                    FullHeal();
+                }
+                break;
+            case 5:
+            case 8:
+            case 10:
+                defaultMovement.speedMax += 0.5f;
+                break;
+            default:
+                print("pranked, there's nothing for you to win");
+                break;
+        }
+    }
+
+    void UnlockKeyPiece()
+    {
+        nbKeyPiece++;
+        if(nbKeyPiece >= 3)
+        {
+            hasSecretKey = true;
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

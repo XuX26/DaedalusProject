@@ -50,19 +50,22 @@ public class InterfaceManager : MonoBehaviour
 
     public void ShowPossibleExperience(int index)
     {
-        float diff = rooms[index].GetComponent<Configuration>().diffucultyLevel;
-        if (diff < 4)
+        if (rooms[index] != null)
         {
-            float amountToLoose = (((rooms[index].GetComponent<Configuration>().diffucultyLevel * 1 / 3) * Player.Instance.fivePercent) - Player.Instance.fivePercent) + (Player.Instance.fivePercent * 0.5f);
-            fillExp.fillAmount = 0;
-            fillBadExp.fillAmount = Player.Instance.currentExperience / Player.Instance.maxExperience;
-            fillBar.fillAmount = (Player.Instance.currentExperience - amountToLoose) / Player.Instance.maxExperience;
-        }
-        else
-        {
-            fillBadExp.fillAmount = 0;
-            fillBar.fillAmount = Player.Instance.currentExperience / Player.Instance.maxExperience;
-            fillExp.fillAmount = (Player.Instance.currentExperience + (rooms[index].GetComponent<Configuration>().diffucultyLevel * (Player.Instance.fivePercent * 0.5f))) / Player.Instance.maxExperience;
+            float diff = rooms[index].GetComponent<Configuration>().diffucultyLevel;
+            if (diff < 4)
+            {
+                float amountToLoose = (((rooms[index].GetComponent<Configuration>().diffucultyLevel * 1 / 3) * Player.Instance.fivePercent) - Player.Instance.fivePercent) + (Player.Instance.fivePercent * 0.5f);
+                fillExp.fillAmount = 0;
+                fillBadExp.fillAmount = Player.Instance.currentExperience / Player.Instance.maxExperience;
+                fillBar.fillAmount = (Player.Instance.currentExperience - amountToLoose) / Player.Instance.maxExperience;
+            }
+            else
+            {
+                fillBadExp.fillAmount = 0;
+                fillBar.fillAmount = Player.Instance.currentExperience / Player.Instance.maxExperience;
+                fillExp.fillAmount = (Player.Instance.currentExperience + ((rooms[index].GetComponent<Configuration>().diffucultyLevel * (Player.Instance.fivePercent * 0.5f)) / 3)) / Player.Instance.maxExperience;
+            }
         }
     }
 
