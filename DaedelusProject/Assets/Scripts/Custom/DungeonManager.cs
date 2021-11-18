@@ -9,10 +9,10 @@ public class DungeonManager : MonoBehaviour
     //public DungeonGenerator DungeonGenerator;
     public Dictionary<Vector2Int, Node> allNodes = new Dictionary<Vector2Int, Node>();
 
-    [Range(3, 20)] public int nbrCriticalRooms;
+    [Range(3, 20)] public int nbrCriticalRooms = 12;
     [Range(1,8)] public int nbrLock = 2;
-    [Range(0f, 1f)] public float coefSidePath;
-    [Range(0.25f,1f)] public float maxSideSize;
+    [Range(0f, 1f)] public float coefSidePath = 0.5f;
+    [Range(0.25f,1f)] public float maxSideSize = 0.25f;
 
     public Node currentNode;
 

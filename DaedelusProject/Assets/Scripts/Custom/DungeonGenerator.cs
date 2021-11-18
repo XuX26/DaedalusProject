@@ -27,8 +27,8 @@ public class DungeonGenerator : MonoBehaviour
 
     private void Start()
     {
-        CreateDungeon(DungeonManager.instance.nbrCriticalRooms);
-        //CreateDungeonBis(DungeonManager.instance.nbrCriticalRooms);
+        //CreateDungeon(DungeonManager.instance.nbrCriticalRooms);
+        CreateDungeonBis(DungeonManager.instance.nbrCriticalRooms);
     }
 
     public void CreateDungeon(int nbrRoom)
@@ -58,7 +58,7 @@ public class DungeonGenerator : MonoBehaviour
     void CreateDungeonBis(int nbrRoom)
     {
         CreateCriticalPath(nbrRoom);
-        CreateAllSidePathBis();
+        //CreateAllSidePathBis();
         InitRooms();
     }
     
@@ -71,7 +71,7 @@ public class DungeonGenerator : MonoBehaviour
         for (int i = 1; i < nbrRoom - 1; ++i)
         {
             lastNode = CreateNodeBis(NodeType.DEFAULT, lastNode);
-            if (lastNode == null)
+            if (lastNode == null) // need exception ?!
                 ReGenerateDungeon(new string("Attempt to create a critical node failed"));
             DungeonManager.instance.allNodes.Add(lastNode.position, lastNode);
         }
@@ -89,7 +89,7 @@ public class DungeonGenerator : MonoBehaviour
         
         while (currentCriticalNode.type != NodeType.END)
         {
-            prevPos = currentCriticalNode.position;
+            prevPos = currentCriticalNode.position; // still used ?
 
             CheckAndUpdateAvailableLinkList(currentCriticalNode);
             if (currentCriticalNode.freeLinks.Count == 0)
@@ -107,10 +107,11 @@ public class DungeonGenerator : MonoBehaviour
                 {
                     lastNode.haveKey = true;
                     currentCriticalNode.links[1].hasLock = true;
+                    lockLeft--;
                 }
             }
             currentCriticalNode = currentCriticalNode.links[1].nodes[1];
-            Debug.Log("New path created");
+            Debug.Log("New Side path created");
         }
     }
 
