@@ -705,9 +705,30 @@ public class DungeonGenerator : MonoBehaviour
             Instantiate(chosenRoom.transform.GetChild(1).GetChild(i), currentRoom.transform.GetChild(1));
         }
         currentRoom.GetComponent<Configuration>().diffucultyLevel = chosenRoom.GetComponent<Configuration>().diffucultyLevel;
+
+
+
         if (Enemy.allEnemies.Count > 0)
         {
-            print("TODO block access next door");
+            foreach (Transform child in currentRoom.transform.GetChild(0))
+            {
+                if (child.CompareTag("Door"))
+                {
+                    child.GetComponent<Door>().previousState = child.GetComponent<Door>().State;
+                    child.GetComponent<Door>().SetState(Door.STATE.WALL);
+                }
+            }
+        }
+    }
+
+    public void ReturnDoorToState()
+    {
+        foreach (Transform child in currentRoom.transform.GetChild(0))
+        {
+            if (child.CompareTag("Door"))
+            {
+                child.GetComponent<Door>().SetState(child.GetComponent<Door>().previousState);
+            }
         }
     }
     
