@@ -41,7 +41,8 @@ public class Player : MonoBehaviour {
 
     // Life and hit related attributes
     [Header("Life")]
-    public int life = 3;
+    [HideInInspector] public int life = 3;
+    public int lifeMax = 3;
     public float invincibilityDuration = 1.0f;
     public float invincibilityBlinkPeriod = 0.2f;
     public LayerMask hitLayers;
@@ -92,6 +93,7 @@ public class Player : MonoBehaviour {
 	// Use this for initialization
 	private void Awake () {
         Instance = this;
+        life = lifeMax;
         _body = GetComponent<Rigidbody2D>();
         GetComponentsInChildren<SpriteRenderer>(true, _spriteRenderers);
     }

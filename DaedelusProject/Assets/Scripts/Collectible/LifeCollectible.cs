@@ -6,6 +6,9 @@ public class LifeCollectible : ACollectible {
 
     protected override void OnCollect()
     {
-        Player.Instance.life++;
+        if (Player.Instance.life < Player.Instance.lifeMax)
+        {
+            Player.Instance.life++;
+        }
     }
 }
