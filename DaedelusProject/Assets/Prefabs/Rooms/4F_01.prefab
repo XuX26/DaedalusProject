@@ -721,7 +721,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
-  diffucultyLevel: 0
+  diffucultyLevel: 1
   numberOfPossibleDoors: 2
 --- !u!1001 &2461241713743462395
 PrefabInstance:

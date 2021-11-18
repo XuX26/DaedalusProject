@@ -318,9 +318,8 @@ public class Player : MonoBehaviour {
 	{
         if (room.gameObject.name == "BaseRoom(Clone)")
         {
-            print("miaou " + room.position);
-            bool hello = DungeonManager.instance.allNodes.TryGetValue(room.position, out DungeonManager.instance.currentNode);
-            if (!hello)
+            bool nodeExists = DungeonManager.instance.allNodes.TryGetValue(room.position, out DungeonManager.instance.currentNode);
+            if (!nodeExists)
             {
                 print("there's a problem");
             }
