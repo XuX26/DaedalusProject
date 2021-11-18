@@ -154,18 +154,35 @@ public class DungeonGenerator : MonoBehaviour
                 {
                     if (thisRoom != prevRoom && thisRoom.GetComponent<Configuration>().type == NodeType.DEFAULT)
                     {
-                        possibleRooms.Add(thisRoom);
+                        if (thisRoom.GetComponent<Configuration>().isFlexible)
+                        {
+                            possibleRooms.Add(thisRoom);
+                        }
+                        else
+                        {
+                            if (node.links.Count - 1 == thisRoom.GetComponent<Configuration>().numberOfPossibleDoors)
+                            {
+                                possibleRooms.Add(thisRoom);
+                            }
+                        }
                     }
                 }
                 break;
             case NodeType.END:
                 foreach (GameObject thisRoom in roomPrefabs)
                 {
-                    if (thisRoom.GetComponent<Configuration>().type == NodeType.DEFAULT)
+                    if (thisRoom.GetComponent<Configuration>().type == NodeType.END)
                     {
-                        if (thisRoom.GetComponent<Configuration>().numberOfPossibleDoors == 1)
+                        if (thisRoom.GetComponent<Configuration>().isFlexible)
                         {
                             possibleRooms.Add(thisRoom);
+                        }
+                        else
+                        {
+                            if (node.links.Count - 1 == thisRoom.GetComponent<Configuration>().numberOfPossibleDoors)
+                            {
+                                possibleRooms.Add(thisRoom);
+                            }
                         }
                     }
                 }
@@ -196,6 +213,11 @@ public class DungeonGenerator : MonoBehaviour
         for (int i = 0; i < chosenRoom.transform.GetChild(1).childCount; ++i)
         {
             Instantiate(chosenRoom.transform.GetChild(1).GetChild(i), currentRoom.transform.GetChild(1));
+        }
+        currentRoom.GetComponent<Configuration>().diffucultyLevel = chosenRoom.GetComponent<Configuration>().diffucultyLevel;
+        if (Enemy.allEnemies.Count > 0)
+        {
+            print("TODO block access next door");
         }
     }
 
