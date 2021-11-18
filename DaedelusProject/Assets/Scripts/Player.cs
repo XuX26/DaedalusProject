@@ -41,7 +41,8 @@ public class Player : MonoBehaviour {
 
     // Life and hit related attributes
     [Header("Life")]
-    public int life = 3;
+    [HideInInspector] public int life = 3;
+    public int lifeMax = 3;
     public float invincibilityDuration = 1.0f;
     public float invincibilityBlinkPeriod = 0.2f;
     public LayerMask hitLayers;
@@ -71,6 +72,10 @@ public class Player : MonoBehaviour {
 
     private float lastAttackTime = float.MinValue;
 
+    [Header("Experience")]
+    public float maxExperience = 100;
+    public float currentExperience = 0;
+
 
     // Input attributes
     [Header("Input")]
@@ -92,6 +97,7 @@ public class Player : MonoBehaviour {
 	// Use this for initialization
 	private void Awake () {
         Instance = this;
+        life = lifeMax;
         _body = GetComponent<Rigidbody2D>();
         GetComponentsInChildren<SpriteRenderer>(true, _spriteRenderers);
     }
@@ -128,29 +134,6 @@ public class Player : MonoBehaviour {
 					{
                         Door thisDoor = collider.GetComponent<Door>();
 						room.OnEnterRoom();
-                        bool hello = DungeonManager.instance.allNodes.TryGetValue(room.position, out DungeonManager.instance.currentNode);
-                        if (!hello)
-                        {
-                            print("there's a problem");
-                        }
-                        //Vector2Int nextNode = Vector2Int.zero;
-                        //switch (thisDoor.Orientation)
-                        //{
-                        //    case Utils.ORIENTATION.NONE:
-                        //        break;
-                        //    case Utils.ORIENTATION.NORTH:
-                        //        nextNode = room
-                        //        break;
-                        //    case Utils.ORIENTATION.EAST:
-                        //        break;
-                        //    case Utils.ORIENTATION.SOUTH:
-                        //        break;
-                        //    case Utils.ORIENTATION.WEST:
-                        //        break;
-                        //    default:
-                        //        break;
-                        //}
-                        //Node pos = Doororient+RoomPos
 					}
 				}
 			}
@@ -203,7 +186,20 @@ public class Player : MonoBehaviour {
         switch (_state)
         {
             case STATE.STUNNED: _currentMovement = stunnedMovement; break;
-            case STATE.DEAD: EndBlink(); break;
+            case STATE.DEAD:
+                {
+                    EndBlink();
+                    Room startRoom = Room.allRooms.Find(x => x.position == Vector2Int.zero);
+                    Player.Instance.transform.position = startRoom.GetWorldRoomBounds().center;
+                    startRoom.OnEnterRoom();
+                    life = lifeMax;
+                    for (int i = 0; i < life; ++i)
+                    {
+                        Hud.Instance.AddHearth();
+                    }
+                    SetState(STATE.IDLE);
+                }
+                break;
             default: _currentMovement = defaultMovement; break;
         }
 
@@ -337,7 +333,27 @@ public class Player : MonoBehaviour {
 
 	public void EnterRoom(Room room)
 	{
-        InterfaceManager.instance.ShowSelectionPanel(true);
+        if (room.gameObject.name == "BaseRoom(Clone)")
+        {
+            bool nodeExists = DungeonManager.instance.allNodes.TryGetValue(room.position, out DungeonManager.instance.currentNode);
+            if (!nodeExists)
+            {
+                print("there's a problem");
+            }
+            InterfaceManager.instance.ShowSelectionPanel(true);
+            if (_room != null)
+            {
+                if (_room.GetComponent<Configuration>().diffucultyLevel < 3)
+                {
+                    currentExperience = Mathf.Clamp(currentExperience - (_room.GetComponent<Configuration>().diffucultyLevel * 10), 0, maxExperience);
+                }
+                else
+                {
+                    currentExperience = Mathf.Clamp(currentExperience + (_room.GetComponent<Configuration>().diffucultyLevel * 10), 0, maxExperience);
+                }
+            }
+        }
+        DungeonGenerator.instance.currentRoom = room;
         _room = room;
 	}
 

@@ -14,6 +14,7 @@ public class DungeonGenerator : MonoBehaviour
     [SerializeField] private GameObject roomBase;
     [SerializeField] private List<GameObject> roomPrefabs = new List<GameObject>();
     private GameObject prevRoom = null;
+    public Room currentRoom;
 
     private void Awake()
     {
@@ -50,88 +51,15 @@ public class DungeonGenerator : MonoBehaviour
         
         //CreateAllSidePaths();
     }
-    
-    Node CreateNode(NodeType type)
-    {
-        Node node = null;
-        int randIndex = 0;
-        Link newLink = null;
-        switch (type)
-        {
-            case NodeType.START:
-                node = new Node(1, NodeType.START, Difficulty.EASY);
-                node.position = Vector2Int.zero;
-                //Link Pos
-                randIndex = Random.Range(0, possibleLinkPos.Count);
-                dir = (LinkPos)possibleLinkPos[randIndex];
-                newLink = new Link(dir, node);
-                node.links.Add(newLink);
-                //next node can't have inverse link pos (can't be left if prev was right)
-                RemoveInverseLinkPosFromPossibilities(node);
-                prevPos = node.position;
-                break;
-            
-            case NodeType.END:
-                node = new Node(1, NodeType.END);
-                SetNodePosition(node);
-                newLink = new Link(prevLink.position, node);
-                newLink.nodes[1] = prevLink.nodes[0];
-                node.links.Add(newLink);
-                break;
-            
-            case NodeType.DEFAULT:
-                node = new Node(2, NodeType.DEFAULT);
-                SetNodePosition(node);
-                prevPos = node.position;
 
-                bool nodeIsValid = CheckAreaBeforeSettingLinkPos();
-
-                if (prevLink.nodes[0].type == NodeType.START)
-                {
-                    DungeonManager.instance.allNodes[Vector2Int.zero].links[0].nodes[1] = node;
-                }
-                prevLink.nodes[1] = node;
-                newLink = new Link(prevLink.position, node);
-                newLink.nodes[1] = prevLink.nodes[0];
-                node.links.Add(newLink);
-                newLink = new Link(dir, node);
-                node.links.Add(newLink);
-
-                RemoveInverseLinkPosFromPossibilities(node);
-                if (!nodeIsValid)
-                {
-                    node = null;
-                }
-                break;
-        }
-        return node;
-    }
-
-    //new version
-    #region newVersion
+    // ----REGION
+    #region newVersion 
     void CreateDungeonBis(int nbrRoom)
     {
         CreateCriticalPath(nbrRoom);
         CreateAllSidePathBis();
         
-        // GameObject nodeRoom = null;
-        // Node thisNode = CreateNode(NodeType.START);
-        // InitRoom(ref nodeRoom, thisNode);
-        // nodeRoom.GetComponent<Room>().isStartRoom = true;
-        // DungeonManager.instance.currentNode = thisNode;
-        // DungeonManager.instance.allNodes.Add(thisNode.position, thisNode);
-        //
-        // for (int i = 1; i < nbrRoom - 1; ++i)
-        // {
-        //     thisNode = CreateNode(NodeType.DEFAULT);
-        //     InitRoom(ref nodeRoom, thisNode);
-        //     DungeonManager.instance.allNodes.Add(thisNode.position, thisNode);
-        // }
-        // thisNode = CreateNode(NodeType.END);
-        // InitRoom(ref nodeRoom, thisNode);
-        // DungeonManager.instance.allNodes.Add(thisNode.position, thisNode);
-        //
-        // CreateAllSidePaths();
+        //InitRooms
     }
     
     void CreateCriticalPath(int nbrRoom)
@@ -193,7 +121,7 @@ public class DungeonGenerator : MonoBehaviour
 
         if (type == NodeType.START)
         {
-            newNode = new Node(Vector2Int.zero, NodeType.START, Difficulty.EASY);
+            newNode = new Node(Vector2Int.zero, NodeType.START);
             randIndex = Random.Range(0, newNode.freeLinks.Count);
             dir = (LinkPos)newNode.freeLinks[randIndex];
             prevLink = newNode.AddNewLink(dir);
@@ -296,8 +224,9 @@ public class DungeonGenerator : MonoBehaviour
         }
         return nodePos;
     }
-    #endregion // END OF REGION
-
+    #endregion 
+    // END OF REGION
+    
     void InitDoors(GameObject room, Node node)
     {
         List<Door> doors = new List<Door>();
@@ -358,44 +287,6 @@ public class DungeonGenerator : MonoBehaviour
 
     void InitRoom(ref GameObject room, Node node)
     {
-        //List<GameObject> possibleRooms = new List<GameObject>();
-        //switch (node.type)
-        //{
-        //    case NodeType.START:
-        //        foreach (GameObject thisRoom in roomPrefabs)
-        //        {
-        //            if(thisRoom != prevRoom && thisRoom.GetComponent<Configuration>().type == NodeType.START)
-        //            {
-        //                possibleRooms.Add(thisRoom);
-        //            }
-        //        }
-        //        break;
-        //    case NodeType.DEFAULT:
-        //        foreach (GameObject thisRoom in roomPrefabs)
-        //        {
-        //            if (thisRoom != prevRoom && thisRoom.GetComponent<Configuration>().type == NodeType.DEFAULT)
-        //            {
-        //                possibleRooms.Add(thisRoom);
-        //            }
-        //        }
-        //        break;
-        //    case NodeType.END:
-        //        foreach (GameObject thisRoom in roomPrefabs)
-        //        {
-        //            if (thisRoom.GetComponent<Configuration>().type == NodeType.DEFAULT)
-        //            {
-        //                if (thisRoom.GetComponent<Configuration>().numberOfPossibleDoors == 1)
-        //                {
-        //                    possibleRooms.Add(thisRoom);
-        //                }
-        //            }
-        //        }
-        //        break;
-        //    default:
-        //        break;
-        //}
-        //prevRoom = possibleRooms[Random.Range(0, possibleRooms.Count)];
-        
         room = Instantiate(roomBase, new Vector3(node.position.x, node.position.y, 0), Quaternion.identity, dungeonParent);
         room.GetComponent<Room>().position = node.position;
 
@@ -420,7 +311,17 @@ public class DungeonGenerator : MonoBehaviour
                 {
                     if (thisRoom != prevRoom && thisRoom.GetComponent<Configuration>().type == NodeType.START)
                     {
-                        possibleRooms.Add(thisRoom);
+                        if (thisRoom.GetComponent<Configuration>().isFlexible)
+                        {
+                            possibleRooms.Add(thisRoom);
+                        }
+                        else
+                        {
+                            if(node.links.Count-1 == thisRoom.GetComponent<Configuration>().numberOfPossibleDoors)
+                            {
+                                possibleRooms.Add(thisRoom);
+                            }
+                        }
                     }
                 }
                 break;
@@ -448,7 +349,6 @@ public class DungeonGenerator : MonoBehaviour
             default:
                 break;
         }
-        prevRoom = possibleRooms[Random.Range(0, possibleRooms.Count)];
         for (int i = 0; i < roomsSelected.Length; ++i)
         {
             if (possibleRooms.Count > 0) {
@@ -456,51 +356,114 @@ public class DungeonGenerator : MonoBehaviour
                 possibleRooms.Remove(roomsSelected[i]);
             }
         }
-
-        //GameObject room = Instantiate(prevRoom, new Vector3(node.position.x, node.position.y, 0), Quaternion.identity, dungeonParent);
-        //room.GetComponent<Room>().position = node.position;
-
-        //Vector3 size = room.GetComponent<Room>().GetLocalRoomBounds().size;
-        //room.transform.position = new Vector3(node.position.x * size.x, node.position.y * size.y, 0);
-
-        //InitDoors(room, node);
     }
 
-    // void CreateAllSidePaths()
-    // {
-    //     Node currentCriticalNode = DungeonManager.instance.allNodes[Vector2Int.zero].links[0].nodes[1];
-    //     int criticalNodeLeft = DungeonManager.instance.allNodes.Count-1;
-    //     int lockLeft = DungeonManager.instance.nbrLock;
-    //     int maxNode = (int)(DungeonManager.instance.nbrCriticalRooms * DungeonManager.instance.maxSideSize);
-    //     
-    //     
-    //     bool canAddNewPath;
-    //     while (currentCriticalNode.type != NodeType.END)
-    //     {
-    //         prevPos = currentCriticalNode.position;
-    //
-    //         canAddNewPath = CheckAreaBeforeSettingLinkPos();
-    //         if (!canAddNewPath)
-    //         {
-    //             currentCriticalNode = currentCriticalNode.links[1].nodes[1]; // get next critical node
-    //             continue;
-    //         }
-    //         
-    //         bool needKey = lockLeft >= criticalNodeLeft || Random.Range(0f,1f) >= (float)lockLeft/criticalNodeLeft;
-    //         
-    //         if (needKey || (Random.Range(0f, 1f) < DungeonManager.instance.coefSidePath))
-    //         {
-    //             Node lastNode = CreateSidePath(Random.Range(1, maxNode + 1), needKey);
-    //             if (needKey)
-    //             {
-    //                 lastNode.haveKey = true;
-    //                 currentCriticalNode.links[0].hasLock = true;
-    //             }
-    //         }
-    //         currentCriticalNode = currentCriticalNode.links[1].nodes[1];
-    //         Debug.Log("New path created");
-    //     }
-    // }
+    public void AssignRoom(GameObject chosenRoom)
+    {
+        prevRoom = chosenRoom;
+        currentRoom.name = chosenRoom.name;
+        for (int i = 0; i < chosenRoom.transform.GetChild(0).childCount; ++i)
+        {
+            if (!chosenRoom.transform.GetChild(0).GetChild(i).CompareTag("Door"))
+            {
+                Instantiate(chosenRoom.transform.GetChild(0).GetChild(i), currentRoom.transform.GetChild(0));
+            }
+        }
+        for (int i = 0; i < chosenRoom.transform.GetChild(1).childCount; ++i)
+        {
+            Instantiate(chosenRoom.transform.GetChild(1).GetChild(i), currentRoom.transform.GetChild(1));
+        }
+    }
+    void CreateAdditionalRooms()
+    {
+        // TODO : change currentCriticalNode to first node and adapt code
+        Node currentCriticalNode = DungeonManager.instance.allNodes[Vector2Int.zero].links[0].nodes[1];
+        int criticalNodeLeft = DungeonManager.instance.allNodes.Count-1;
+        int maxNode = (int)(DungeonManager.instance.nbrCriticalRooms * DungeonManager.instance.maxSideSize);
+        
+        int lockLeft = DungeonManager.instance.nbrLock;
+
+        bool canAddNewDoor;
+        while (currentCriticalNode.type != NodeType.END)
+        {
+            canAddNewDoor = CheckAreaBeforeSettingLinkPos();
+            if (!canAddNewDoor)
+            {
+                currentCriticalNode = currentCriticalNode.links[1].nodes[1]; // get next critical node
+                continue;
+            }
+
+            bool needKey = lockLeft >= criticalNodeLeft || Random.Range(0f,1f) > (float)lockLeft/criticalNodeLeft;
+            
+            prevPos = currentCriticalNode.position;
+            int nodeLeft = Random.Range(1, maxNode + 1);
+            while (nodeLeft > 0)
+            {
+                canAddNewDoor = CheckAreaBeforeSettingLinkPos();
+                if (canAddNewDoor)
+                    CreateNode(NodeType.DEFAULT);
+
+                // else
+                // {
+                //     if (needKey)
+                //         // add key to the current node
+                // }
+                nodeLeft--;
+            }
+        }
+    }
+    
+    Node CreateNode(NodeType type)
+    {
+        Node node = null;
+        int randIndex = 0;
+        Link newLink = null;
+        switch (type)
+        {
+            case NodeType.START:
+                node = new Node(1, NodeType.START, 1);
+                node.position = Vector2Int.zero;
+                //Link Pos
+                randIndex = Random.Range(0, possibleLinkPos.Count);
+                dir = (LinkPos)possibleLinkPos[randIndex];
+                newLink = new Link(dir, node);
+                node.links.Add(newLink);
+                //next node can't have inverse link pos (can't be left if prev was right)
+                RemoveInverseLinkPosFromPossibilities(node);
+                prevPos = node.position;
+                break;
+            
+            case NodeType.END:
+                node = new Node(1, NodeType.END);
+                SetNodePosition(node);
+                newLink = new Link(prevLink.position, node);
+                newLink.nodes[1] = prevLink.nodes[0];
+                node.links.Add(newLink);
+                break;
+            
+            case NodeType.DEFAULT:
+                node = new Node(2, NodeType.DEFAULT);
+                SetNodePosition(node);
+                prevPos = node.position;
+
+                bool nodeIsValid = CheckAreaBeforeSettingLinkPos();
+
+                prevLink.nodes[1] = node;
+                newLink = new Link(prevLink.position, node);
+                newLink.nodes[1] = prevLink.nodes[0];
+                node.links.Add(newLink);
+                newLink = new Link(dir, node);
+                node.links.Add(newLink);
+
+                RemoveInverseLinkPosFromPossibilities(node);
+                if (!nodeIsValid)
+                {
+                    node = null;
+                }
+                break;
+        }
+        return node;
+    }
     
     /// <summary>
     /// Pour chaque noeud, spawner salle qui correspond. Liste de toutes les salles possibles, filtres liste selon param. 
@@ -613,8 +576,6 @@ public class DungeonGenerator : MonoBehaviour
                 break;
         }
     }
-
-    
 
     void ReGenerateDungeon(string error)
     {
