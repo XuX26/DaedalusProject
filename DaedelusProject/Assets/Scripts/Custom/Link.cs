@@ -14,7 +14,12 @@ public class Link
         nodes[0] = parentNode;
     }
 
-    
+    public Link(Node nodeFrom, Node newNode, LinkPos dir)
+    {
+        nodes[0] = nodeFrom;
+        nodes[1] = newNode;
+        position = dir;
+    }
 }
 public enum LinkPos
 {

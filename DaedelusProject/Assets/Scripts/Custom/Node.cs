@@ -30,9 +30,9 @@ public class Node
     }
 
     // Create and add new link then remove it from freeLinks and return this newLink
-    public Link AddNewLink(LinkPos dir)
+    public Link AddNewLink(Node nextNode, LinkPos dir)
     {
-        Link newLink = new Link(dir, this);
+        Link newLink = new Link(this, nextNode, dir);
         links.Add(newLink);
         freeLinks.Remove((int)dir);
         return newLink;

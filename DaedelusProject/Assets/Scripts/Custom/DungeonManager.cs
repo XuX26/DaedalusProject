@@ -6,7 +6,7 @@ using UnityEngine;
 public class DungeonManager : MonoBehaviour
 {
     public static DungeonManager instance;
-    public DungeonGenerator DungeonGenerator;
+    //public DungeonGenerator DungeonGenerator;
     public Dictionary<Vector2Int, Node> allNodes = new Dictionary<Vector2Int, Node>();
 
     [Range(3, 20)] public int nbrCriticalRooms;
@@ -37,6 +37,6 @@ public class DungeonManager : MonoBehaviour
     void InitVar()
     {
         nbrLock = Mathf.Clamp(nbrLock, 1, nbrCriticalRooms-1);
-        DungeonGenerator = GetComponent<DungeonGenerator>();
+        //DungeonGenerator = GetComponent<DungeonGenerator>();
     }
 }

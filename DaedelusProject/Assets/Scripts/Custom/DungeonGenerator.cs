@@ -28,6 +28,7 @@ public class DungeonGenerator : MonoBehaviour
     private void Start()
     {
         CreateDungeon(DungeonManager.instance.nbrCriticalRooms);
+        //CreateDungeonBis(DungeonManager.instance.nbrCriticalRooms);
     }
 
     public void CreateDungeon(int nbrRoom)
@@ -52,19 +53,19 @@ public class DungeonGenerator : MonoBehaviour
         //CreateAllSidePaths();
     }
 
-    // ----REGION
+    // -------- NEW VERSION REGION --------
     #region newVersion 
     void CreateDungeonBis(int nbrRoom)
     {
         CreateCriticalPath(nbrRoom);
         CreateAllSidePathBis();
-        
-        //InitRooms
+        InitRooms();
     }
     
     void CreateCriticalPath(int nbrRoom)
     {
-        Node lastNode = CreateNodeBis(NodeType.START, null);
+        //Node lastNode = CreateNodeBis(NodeType.START, null);
+        Node lastNode = new Node(Vector2Int.zero, NodeType.START);
         DungeonManager.instance.allNodes.Add(Vector2Int.zero, lastNode);
 
         for (int i = 1; i < nbrRoom - 1; ++i)
@@ -72,7 +73,6 @@ public class DungeonGenerator : MonoBehaviour
             lastNode = CreateNodeBis(NodeType.DEFAULT, lastNode);
             if (lastNode == null)
                 ReGenerateDungeon(new string("Attempt to create a critical node failed"));
-            
             DungeonManager.instance.allNodes.Add(lastNode.position, lastNode);
         }
         
@@ -113,37 +113,54 @@ public class DungeonGenerator : MonoBehaviour
             Debug.Log("New path created");
         }
     }
+
+    void InitRooms()
+    {
+        GameObject nodeRoom = null;
+
+        foreach (var node in DungeonManager.instance.allNodes)
+        {
+            InitRoom(ref nodeRoom,  DungeonManager.instance.allNodes[node.Key]);
+            if (node.Key == Vector2Int.zero)
+                nodeRoom.GetComponent<Room>().isStartRoom = true;
+        }
+    }
     
+    // /!\ This method is not called to create the first node
     Node CreateNodeBis(NodeType type, Node nodeFrom)
     {
         Node newNode = null;
+
+        // if (type == NodeType.START)
+        // {
+        //     newNode = new Node(Vector2Int.zero, type);
+        //     prevLink = null;
+        //     //randIndex = Random.Range(0, newNode.freeLinks.Count);
+        //     //dir = (LinkPos)newNode.freeLinks[randIndex];
+        //     //prevLink = newNode.AddNewLink(dir);
+        // }
+
+        CheckAndUpdateAvailableLinkList(nodeFrom);
+        int nbrFreeLinks = nodeFrom.freeLinks.Count;
+        if (nbrFreeLinks == 0)
+            return null;
+            
         int randIndex;
-
-        if (type == NodeType.START)
-        {
-            newNode = new Node(Vector2Int.zero, NodeType.START);
-            randIndex = Random.Range(0, newNode.freeLinks.Count);
-            dir = (LinkPos)newNode.freeLinks[randIndex];
-            prevLink = newNode.AddNewLink(dir);
-        }
-
-        else
-        {
-            CheckAndUpdateAvailableLinkList(nodeFrom);
-            int nbrFreeLinks = nodeFrom.freeLinks.Count;
-            if (nbrFreeLinks == 0)
-                return null;
+        randIndex = Random.Range(0, nbrFreeLinks);
+        dir = (LinkPos)nodeFrom.freeLinks[randIndex];
+        Vector2Int newNodePos = GetPosOfNextNode(nodeFrom.position, (int)dir);
+        newNode = new Node(newNodePos);
+        LinkTwoNode(nodeFrom, newNode, dir);
             
-            randIndex = Random.Range(0, nbrFreeLinks);
-            Vector2Int newNodePos = GetPosOfNextNode(nodeFrom.position, nodeFrom.freeLinks[randIndex]);
-            newNode = new Node(newNodePos);
-            prevLink.nodes[1] = newNode;
-            dir = (LinkPos)newNode.freeLinks[randIndex];
-            prevLink = newNode.AddNewLink(dir);
-            
-            //prevPos = newNodePos;
-        }
+        prevPos = newNodePos; // not even used ?
         return newNode;
+    }
+
+    // Add Create links for both nodes
+    void LinkTwoNode(Node from, Node next, LinkPos dir)
+    {
+        from.AddNewLink(next, dir);
+        next.AddNewLink(from, (LinkPos)GetMirrorPos((int)dir));
     }
 
     // Equivalent of "CheckAreaBeforeSettingLinkPos()"
@@ -153,8 +170,9 @@ public class DungeonGenerator : MonoBehaviour
         Vector2Int toCheck = Vector2Int.zero;
         Node sideNode = null;
         bool nodeExists = false;
-        
-        foreach (int freeLink in node.freeLinks)
+
+        int[] tmpFreeLink = node.freeLinks.ToArray();
+        foreach (int freeLink in tmpFreeLink)
         {
             switch (freeLink)
             {
@@ -179,7 +197,7 @@ public class DungeonGenerator : MonoBehaviour
             if (nodeExists)
             {
                 node.freeLinks.Remove(freeLink);
-                sideNode.freeLinks.Remove(GetMirrorPos(freeLink));
+                sideNode.freeLinks.Remove(GetMirrorPos(freeLink)); // remove the freelink also in the next node
             }
             nodeExists = false;
         }
@@ -418,6 +436,7 @@ public class DungeonGenerator : MonoBehaviour
         Node node = null;
         int randIndex = 0;
         Link newLink = null;
+        
         switch (type)
         {
             case NodeType.START:
