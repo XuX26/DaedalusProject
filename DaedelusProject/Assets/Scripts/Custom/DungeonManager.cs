@@ -12,8 +12,10 @@ public class DungeonManager : MonoBehaviour
     [Range(3, 20)] public int nbrCriticalRooms = 12;
     [Range(1,8)] public int nbrLock = 2;
     [Range(0f, 1f)] public float coefSidePath = 0.5f;
-    [Range(0.25f,1f)] public float maxSideSize = 0.25f;
+    [Range(0.25f,1f)] public float maxSideSizeCoef = 0.25f;
+    [Range(1,5)] public int minSideSize = 2;
 
+    
     public Node currentNode;
 
     private bool RandomMadness; // TODO BONUS : full random mode, so generator random every nbr var
@@ -25,7 +27,6 @@ public class DungeonManager : MonoBehaviour
             Destroy(instance);
         }
         instance = this;
-        
         InitVar();
     }
 
@@ -37,6 +38,8 @@ public class DungeonManager : MonoBehaviour
     void InitVar()
     {
         nbrLock = Mathf.Clamp(nbrLock, 1, nbrCriticalRooms-1);
+        int maxSideSize = (int)(nbrCriticalRooms * maxSideSizeCoef);
+        minSideSize = minSideSize > maxSideSize ? maxSideSize - 1 : minSideSize;
         //DungeonGenerator = GetComponent<DungeonGenerator>();
     }
 }

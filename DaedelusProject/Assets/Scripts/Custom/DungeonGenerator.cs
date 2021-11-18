@@ -83,7 +83,8 @@ public class DungeonGenerator : MonoBehaviour
         Node currentCriticalNode = DungeonManager.instance.allNodes[Vector2Int.zero].links[0].nodes[1];
         int criticalNodeLeft = DungeonManager.instance.allNodes.Count-2;
         int lockLeft = DungeonManager.instance.nbrLock;
-        int maxNode = (int)(DungeonManager.instance.nbrCriticalRooms * DungeonManager.instance.maxSideSize);
+        int maxNode = (int)(DungeonManager.instance.nbrCriticalRooms * DungeonManager.instance.maxSideSizeCoef);
+        int minNode = DungeonManager.instance.minSideSize;
         
         //while (currentCriticalNode.type != NodeType.END)
         while (criticalNodeLeft > 0)
@@ -102,12 +103,13 @@ public class DungeonGenerator : MonoBehaviour
             
             if (needKey || (Random.Range(0f, 1f) < DungeonManager.instance.coefSidePath))
             {
-                Node lastNode = CreateSidePath(Random.Range(1, maxNode + 1), currentCriticalNode);
+                Node lastNode = CreateSidePath(Random.Range(minNode, maxNode + 1), currentCriticalNode);
                 Debug.Log("New Side path created");
                 if (needKey)
                 {
                     lastNode.haveKey = true;
                     currentCriticalNode.links[1].hasLock = true;
+                    
                     lockLeft--;
                     Debug.Log("Key added");
                 }
@@ -119,6 +121,11 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
+    void CreateSecretRoom()
+    {
+        
+    }
+    
     void InitRooms()
     {
         GameObject nodeRoom = null;
@@ -264,7 +271,7 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         if (curDoor.Orientation == Utils.ORIENTATION.NORTH)
                         {
-                            curDoor.SetState(Door.STATE.OPEN);
+                            curDoor.SetState(doorPos.hasLock? Door.STATE.CLOSED : Door.STATE.OPEN);
                         }
                     }
                     break;
@@ -273,7 +280,7 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         if (curDoor.Orientation == Utils.ORIENTATION.SOUTH)
                         {
-                            curDoor.SetState(Door.STATE.OPEN);
+                            curDoor.SetState(doorPos.hasLock? Door.STATE.CLOSED : Door.STATE.OPEN);
                         }
                     }
                     break;
@@ -282,7 +289,7 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         if (curDoor.Orientation == Utils.ORIENTATION.WEST)
                         {
-                            curDoor.SetState(Door.STATE.OPEN);
+                            curDoor.SetState(doorPos.hasLock? Door.STATE.CLOSED : Door.STATE.OPEN);
                         }
                     }
                     break;
@@ -291,13 +298,14 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         if (curDoor.Orientation == Utils.ORIENTATION.EAST)
                         {
-                            curDoor.SetState(Door.STATE.OPEN);
+                            curDoor.SetState(doorPos.hasLock? Door.STATE.CLOSED : Door.STATE.OPEN);
                         }
                     }
                     break;
                 default:
                     break;
             }
+            
         }
         
     }
