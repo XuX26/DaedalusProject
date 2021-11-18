@@ -128,29 +128,6 @@ public class Player : MonoBehaviour {
 					{
                         Door thisDoor = collider.GetComponent<Door>();
 						room.OnEnterRoom();
-                        bool hello = DungeonManager.instance.allNodes.TryGetValue(room.position, out DungeonManager.instance.currentNode);
-                        if (!hello)
-                        {
-                            print("there's a problem");
-                        }
-                        //Vector2Int nextNode = Vector2Int.zero;
-                        //switch (thisDoor.Orientation)
-                        //{
-                        //    case Utils.ORIENTATION.NONE:
-                        //        break;
-                        //    case Utils.ORIENTATION.NORTH:
-                        //        nextNode = room
-                        //        break;
-                        //    case Utils.ORIENTATION.EAST:
-                        //        break;
-                        //    case Utils.ORIENTATION.SOUTH:
-                        //        break;
-                        //    case Utils.ORIENTATION.WEST:
-                        //        break;
-                        //    default:
-                        //        break;
-                        //}
-                        //Node pos = Doororient+RoomPos
 					}
 				}
 			}
@@ -337,7 +314,17 @@ public class Player : MonoBehaviour {
 
 	public void EnterRoom(Room room)
 	{
-        InterfaceManager.instance.ShowSelectionPanel(true);
+        if (room.gameObject.name == "BaseRoom(Clone)")
+        {
+            print("miaou " + room.position);
+            bool hello = DungeonManager.instance.allNodes.TryGetValue(room.position, out DungeonManager.instance.currentNode);
+            if (!hello)
+            {
+                print("there's a problem");
+            }
+            InterfaceManager.instance.ShowSelectionPanel(true);
+        }
+        DungeonGenerator.instance.currentRoom = room;
         _room = room;
 	}
 

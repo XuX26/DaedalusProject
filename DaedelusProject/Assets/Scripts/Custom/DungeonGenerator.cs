@@ -14,6 +14,7 @@ public class DungeonGenerator : MonoBehaviour
     [SerializeField] private GameObject roomBase;
     [SerializeField] private List<GameObject> roomPrefabs = new List<GameObject>();
     private GameObject prevRoom = null;
+    public Room currentRoom;
 
     private void Awake()
     {
@@ -110,43 +111,6 @@ public class DungeonGenerator : MonoBehaviour
 
     void InitRoom(ref GameObject room, Node node)
     {
-        //List<GameObject> possibleRooms = new List<GameObject>();
-        //switch (node.type)
-        //{
-        //    case NodeType.START:
-        //        foreach (GameObject thisRoom in roomPrefabs)
-        //        {
-        //            if(thisRoom != prevRoom && thisRoom.GetComponent<Configuration>().type == NodeType.START)
-        //            {
-        //                possibleRooms.Add(thisRoom);
-        //            }
-        //        }
-        //        break;
-        //    case NodeType.DEFAULT:
-        //        foreach (GameObject thisRoom in roomPrefabs)
-        //        {
-        //            if (thisRoom != prevRoom && thisRoom.GetComponent<Configuration>().type == NodeType.DEFAULT)
-        //            {
-        //                possibleRooms.Add(thisRoom);
-        //            }
-        //        }
-        //        break;
-        //    case NodeType.END:
-        //        foreach (GameObject thisRoom in roomPrefabs)
-        //        {
-        //            if (thisRoom.GetComponent<Configuration>().type == NodeType.DEFAULT)
-        //            {
-        //                if (thisRoom.GetComponent<Configuration>().numberOfPossibleDoors == 1)
-        //                {
-        //                    possibleRooms.Add(thisRoom);
-        //                }
-        //            }
-        //        }
-        //        break;
-        //    default:
-        //        break;
-        //}
-        //prevRoom = possibleRooms[Random.Range(0, possibleRooms.Count)];
         room = Instantiate(roomBase, new Vector3(node.position.x, node.position.y, 0), Quaternion.identity, dungeonParent);
         room.GetComponent<Room>().position = node.position;
 
@@ -159,6 +123,7 @@ public class DungeonGenerator : MonoBehaviour
 
     public void ChooseThreeRooms(ref GameObject[] roomsSelected, Node node)
     {
+        print("hello " + node.type);
         for (int i = 0; i < roomsSelected.Length; ++i)
         {
             roomsSelected[i] = null;
@@ -207,14 +172,22 @@ public class DungeonGenerator : MonoBehaviour
                 possibleRooms.Remove(roomsSelected[i]);
             }
         }
+    }
 
-        //GameObject room = Instantiate(prevRoom, new Vector3(node.position.x, node.position.y, 0), Quaternion.identity, dungeonParent);
-        //room.GetComponent<Room>().position = node.position;
-
-        //Vector3 size = room.GetComponent<Room>().GetLocalRoomBounds().size;
-        //room.transform.position = new Vector3(node.position.x * size.x, node.position.y * size.y, 0);
-
-        //InitDoors(room, node);
+    public void AssignRoom(GameObject chosenRoom)
+    {
+        currentRoom.name = chosenRoom.name;
+        for (int i = 0; i < chosenRoom.transform.GetChild(0).childCount; ++i)
+        {
+            if (!chosenRoom.transform.GetChild(0).GetChild(i).CompareTag("Door"))
+            {
+                Instantiate(chosenRoom.transform.GetChild(0).GetChild(i), currentRoom.transform);
+            }
+        }
+        for (int i = 0; i < chosenRoom.transform.GetChild(1).childCount; ++i)
+        {
+            Instantiate(chosenRoom.transform.GetChild(1).GetChild(i), currentRoom.transform);
+        }
     }
 
     void CreateCriticalRooms()

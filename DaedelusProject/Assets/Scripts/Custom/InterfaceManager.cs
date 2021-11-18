@@ -19,6 +19,11 @@ public class InterfaceManager : MonoBehaviour
         instance = this;
     }
 
+    public void ChooseRoom(int roomIndex)
+    {
+        DungeonGenerator.instance.AssignRoom(rooms[roomIndex]);
+    }
+
 
     public void ShowSelectionPanel(bool show)
     {
