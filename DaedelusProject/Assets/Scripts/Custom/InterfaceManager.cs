@@ -19,6 +19,14 @@ public class InterfaceManager : MonoBehaviour
 
     public void ShowSelectionPanel(bool show)
     {
+        if (show)
+        {
+            Time.timeScale = 0;
+        }
+        else
+        {
+            Time.timeScale = 1;
+        }
         roomSelectionPanel.SetActive(show);
     }
 
