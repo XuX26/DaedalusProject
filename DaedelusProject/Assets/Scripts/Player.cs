@@ -75,6 +75,7 @@ public class Player : MonoBehaviour {
     [Header("Experience")]
     public float maxExperience = 100;
     public float currentExperience = 0;
+    public float fivePercent = 0;
 
 
     // Input attributes
@@ -105,6 +106,8 @@ public class Player : MonoBehaviour {
     private void Start()
     {
         SetState(STATE.IDLE);
+        fivePercent = (maxExperience * 5) / 100;
+        currentExperience = fivePercent + (fivePercent * 0.5f);
     }
 
     // Update is called once per frame
@@ -133,7 +136,12 @@ public class Player : MonoBehaviour {
 					if(room && room != _room)
 					{
                         Door thisDoor = collider.GetComponent<Door>();
-						room.OnEnterRoom();
+                        //TODO : doorLocked But no kay => wall ???
+                        //Enemy on destroy if count <= 0, door become open => change state
+                        //if (Enemy.allEnemies.Count == 0)
+                        //{
+                            room.OnEnterRoom();
+                        //}
 					}
 				}
 			}
@@ -340,18 +348,19 @@ public class Player : MonoBehaviour {
             {
                 print("there's a problem");
             }
-            InterfaceManager.instance.ShowSelectionPanel(true);
-            if (_room != null)
+            if (_room != null && !_room.isStartRoom)
             {
-                if (_room.GetComponent<Configuration>().diffucultyLevel < 3)
+                if (_room.GetComponent<Configuration>().diffucultyLevel < 4)
                 {
-                    currentExperience = Mathf.Clamp(currentExperience - (_room.GetComponent<Configuration>().diffucultyLevel * 10), 0, maxExperience);
+                    float amountToLoose = (((_room.GetComponent<Configuration>().diffucultyLevel * 1 / 3) * fivePercent) - fivePercent) + (fivePercent * 0.5f);
+                    currentExperience = Mathf.Clamp(currentExperience - amountToLoose, 0, maxExperience);
                 }
                 else
                 {
-                    currentExperience = Mathf.Clamp(currentExperience + (_room.GetComponent<Configuration>().diffucultyLevel * 10), 0, maxExperience);
+                    currentExperience = Mathf.Clamp(currentExperience + (_room.GetComponent<Configuration>().diffucultyLevel * (fivePercent * 0.5f)), 0, maxExperience);
                 }
             }
+            InterfaceManager.instance.ShowSelectionPanel(true);
         }
         DungeonGenerator.instance.currentRoom = room;
         _room = room;

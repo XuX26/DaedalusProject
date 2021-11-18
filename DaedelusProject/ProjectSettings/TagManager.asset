@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Door
   - Health
+  - Key
+  - Spike
+  - Enemy
   layers:
   - Default
   - TransparentFX
