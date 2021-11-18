@@ -80,6 +80,8 @@ public class Player : MonoBehaviour {
 
     private int nbKeyPiece = 0;
     private bool hasSecretKey = false;
+    bool alreadyHealed = false;
+    bool[] keyPieceUnlocked = new bool[3] { false, false, false };
 
 
     // Input attributes
@@ -363,16 +365,25 @@ public class Player : MonoBehaviour {
                 {
                     float amountToLoose = (((_room.GetComponent<Configuration>().diffucultyLevel * 1 / 3) * fivePercent) - fivePercent) + (fivePercent * 0.5f);
                     currentExperience = Mathf.Clamp(currentExperience - amountToLoose, 0, maxExperience);
+                    while (currentExperience <= (nextMilestone-1) * (maxExperience * (100 / 13) / 100))
+                    {
+                        RevertReward(nextMilestone);
+                        --nextMilestone;
+                    }
+                    if(nextMilestone == 0)
+                    {
+                        nextMilestone++;
+                    }
                 }
                 else
                 {
                     currentExperience = Mathf.Clamp(currentExperience + ((_room.GetComponent<Configuration>().diffucultyLevel * (fivePercent * 0.5f)) / 3), 0, maxExperience);
-                }
-                while (currentExperience >= nextMilestone * (maxExperience*(100/13)/100))
-                {
-                    print("passe : " + nextMilestone);
-                    UnlockReward(nextMilestone);
-                    ++nextMilestone;
+
+                    while (currentExperience >= nextMilestone * (maxExperience * (100 / 13) / 100))
+                    {
+                        UnlockReward(nextMilestone);
+                        ++nextMilestone;
+                    }
                 }
             }
             InterfaceManager.instance.ShowSelectionPanel(true);
@@ -381,12 +392,51 @@ public class Player : MonoBehaviour {
         _room = room;
 	}
 
+    void RevertReward(int rewardIndex)
+    {
+        switch (rewardIndex)
+        {
+            case 2:
+            case 6:
+            case 12:
+                attackCooldown += 0.1f;
+                break;
+            case 3:
+            case 7:
+            case 11:
+                //UnlockKeyPiece();
+                break;
+            case 4:
+            case 9:
+                {
+                    lifeMax--;
+                    if(life > lifeMax)
+                    {
+                        life = lifeMax;
+                    }
+                }
+                break;
+            case 5:
+            case 8:
+            case 10:
+                defaultMovement.speedMax -= 0.5f;
+                break;
+            default:
+                print("pranked, there's nothing for you to loose");
+                break;
+        }
+    }
+
     void UnlockReward(int rewardIndex)
     {
         switch (rewardIndex)
         {
             case 1:
-                FullHeal();
+                if (!alreadyHealed)
+                {
+                    FullHeal();
+                    alreadyHealed = true;
+                }
                 break;
             case 2 :
             case 6 :
@@ -416,12 +466,43 @@ public class Player : MonoBehaviour {
         }
     }
 
-    void UnlockKeyPiece()
+    void UnlockKeyPiece(int index)
     {
-        nbKeyPiece++;
-        if(nbKeyPiece >= 3)
+        switch (index)
         {
-            hasSecretKey = true;
+            case 3:
+                {
+                    if (!keyPieceUnlocked[0])
+                    {
+                        nbKeyPiece++;
+                        keyPieceUnlocked[0] = true;
+                    }
+                }
+                break;
+            case 7:
+                {
+                    if (!keyPieceUnlocked[1])
+                    {
+                        nbKeyPiece++;
+                        keyPieceUnlocked[1] = true;
+                    }
+                }
+                break;
+            case 11:
+                {
+                    if (!keyPieceUnlocked[2])
+                    {
+                        nbKeyPiece++;
+                        keyPieceUnlocked[2] = true;
+                    }
+                    if (nbKeyPiece >= 3)
+                    {
+                        hasSecretKey = true;
+                    }
+                }
+                break;
+            default:
+                break;
         }
     }
 
