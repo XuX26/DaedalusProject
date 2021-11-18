@@ -313,7 +313,8 @@ public class Player : MonoBehaviour {
 
 	public void EnterRoom(Room room)
 	{
-		_room = room;
+        InterfaceManager.instance.ShowSelectionPanel(true);
+        _room = room;
 	}
 
     private void OnTriggerEnter2D(Collider2D collision)
