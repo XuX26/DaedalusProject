@@ -13,6 +13,8 @@ public class DungeonManager : MonoBehaviour
     [Range(0f, 1f)] public float coefSidePath;
     [Range(0.25f,1f)] public float maxSideSize;
 
+    public Node currentNode;
+
     private bool RandomMadness; // TODO BONUS : full random mode, so generator random every nbr var
 
     void Awake()
