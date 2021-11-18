@@ -18,6 +18,7 @@ public class InterfaceManager : MonoBehaviour
     [Header("Event System")]
     [SerializeField] private EventSystem eventSystem;
     GameObject[] rooms = new GameObject[3] { null, null, null };
+    [SerializeField] private GameObject endPanel;
 
     private void Awake()
     {
@@ -156,6 +157,11 @@ public class InterfaceManager : MonoBehaviour
             }
         }
         ChangeOpacity(hasWhatWereLookingFor, iconsPanels[cardIndex].GetChild(iconIndex).GetComponent<Image>());
+    }
+
+    public void ShowEndPanel()
+    {
+        endPanel.SetActive(true);
     }
 
 }

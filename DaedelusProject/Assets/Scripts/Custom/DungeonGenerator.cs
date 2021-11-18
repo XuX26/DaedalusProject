@@ -154,6 +154,7 @@ public class DungeonGenerator : MonoBehaviour
         Vector2Int newNodePos = GetPosOfNextNode(nodeFrom.position, (int)dir);
         newNode = new Node(newNodePos);
         LinkTwoNode(nodeFrom, newNode, dir);
+        newNode.type = type;
             
         DungeonManager.instance.allNodes.Add(newNode.position, newNode);
         prevPos = newNodePos; // not even used ?
@@ -318,6 +319,8 @@ public class DungeonGenerator : MonoBehaviour
         room.GetComponent<Room>().position = node.position;
         Vector3 size = room.GetComponent<Room>().GetLocalRoomBounds().size;
         room.transform.position = new Vector3(node.position.x * size.x, node.position.y * size.y, 0);
+
+        room.GetComponent<Configuration>().type = node.type;
 
         InitDoors(room, node);
     }
@@ -714,7 +717,65 @@ public class DungeonGenerator : MonoBehaviour
         }
         currentRoom.GetComponent<Configuration>().diffucultyLevel = chosenRoom.GetComponent<Configuration>().diffucultyLevel;
 
+        if(currentRoom.GetComponent<Configuration>().type == NodeType.END)
+        {
+            int freeLinksCount = DungeonManager.instance.allNodes[currentRoom.GetComponent<Room>().position].freeLinks.Count;
+            LinkPos endDoor = (LinkPos)DungeonManager.instance.allNodes[currentRoom.GetComponent<Room>().position].freeLinks[Random.Range(0, freeLinksCount)];
 
+            switch (endDoor)
+            {
+                case LinkPos.UP:
+                    foreach (Transform child in currentRoom.transform.GetChild(0))
+                    {
+                        if (child.CompareTag("Door"))
+                        {
+                            if(child.GetComponent<Door>().Orientation == Utils.ORIENTATION.NORTH)
+                            {
+                                child.GetComponent<Door>().SetState(Door.STATE.END);
+                            }
+                        }
+                    }
+                    break;
+                case LinkPos.DOWN:
+                    foreach (Transform child in currentRoom.transform.GetChild(0))
+                    {
+                        if (child.CompareTag("Door"))
+                        {
+                            if (child.GetComponent<Door>().Orientation == Utils.ORIENTATION.SOUTH)
+                            {
+                                child.GetComponent<Door>().SetState(Door.STATE.END);
+                            }
+                        }
+                    }
+                    break;
+                case LinkPos.LEFT:
+                    foreach (Transform child in currentRoom.transform.GetChild(0))
+                    {
+                        if (child.CompareTag("Door"))
+                        {
+                            if (child.GetComponent<Door>().Orientation == Utils.ORIENTATION.WEST)
+                            {
+                                child.GetComponent<Door>().SetState(Door.STATE.END);
+                            }
+                        }
+                    }
+                    break;
+                case LinkPos.RIGHT:
+                    foreach (Transform child in currentRoom.transform.GetChild(0))
+                    {
+                        if (child.CompareTag("Door"))
+                        {
+                            if (child.GetComponent<Door>().Orientation == Utils.ORIENTATION.EAST)
+                            {
+                                child.GetComponent<Door>().SetState(Door.STATE.END);
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
 
         if (Enemy.allEnemies.Count > 0)
         {

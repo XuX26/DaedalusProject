@@ -10,6 +10,7 @@ public class Door : MonoBehaviour {
         CLOSED = 1,
         WALL = 2,
         SECRET = 3,
+        END = 4,
     }
 
     public const string PLAYER_NAME = "Player";
@@ -23,6 +24,7 @@ public class Door : MonoBehaviour {
     public GameObject openGo = null;
     public GameObject wallGo = null;
     public GameObject secretGo = null;
+    public GameObject endGo = null;
 
 	private Room _room = null;
 
@@ -48,6 +50,10 @@ public class Door : MonoBehaviour {
 		{
 			SetState(STATE.SECRET);
 		}
+        else if (endGo.gameObject.activeSelf)
+        {
+            SetState(STATE.END);
+        }
     }
 
     public void SetOrientation()
@@ -91,6 +97,10 @@ public class Door : MonoBehaviour {
 					}
 				}
                 break;
+            case STATE.END:
+                InterfaceManager.instance.ShowEndPanel();
+                Time.timeScale = 0;
+                break;
         }
     }
 
@@ -107,6 +117,7 @@ public class Door : MonoBehaviour {
         if (openGo) { openGo.SetActive(false); }
         if (wallGo) { wallGo.SetActive(false); }
         if (secretGo) { secretGo.SetActive(false); }
+        if (endGo) { endGo.SetActive(false); }
         _state = state;
         switch(_state)
         {
@@ -121,6 +132,9 @@ public class Door : MonoBehaviour {
                 break;
             case STATE.SECRET:
                 if (secretGo) { secretGo.SetActive(true); }
+                break;
+            case STATE.END:
+                if (endGo) { endGo.SetActive(true); }
                 break;
         }
     }
