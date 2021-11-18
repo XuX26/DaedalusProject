@@ -72,6 +72,10 @@ public class Player : MonoBehaviour {
 
     private float lastAttackTime = float.MinValue;
 
+    [Header("Experience")]
+    public float maxExperience = 100;
+    public float currentExperience = 0;
+
 
     // Input attributes
     [Header("Input")]
@@ -337,6 +341,17 @@ public class Player : MonoBehaviour {
                 print("there's a problem");
             }
             InterfaceManager.instance.ShowSelectionPanel(true);
+            if (_room != null)
+            {
+                if (_room.GetComponent<Configuration>().diffucultyLevel < 3)
+                {
+                    currentExperience = Mathf.Clamp(currentExperience - (_room.GetComponent<Configuration>().diffucultyLevel * 10), 0, maxExperience);
+                }
+                else
+                {
+                    currentExperience = Mathf.Clamp(currentExperience + (_room.GetComponent<Configuration>().diffucultyLevel * 10), 0, maxExperience);
+                }
+            }
         }
         DungeonGenerator.instance.currentRoom = room;
         _room = room;
