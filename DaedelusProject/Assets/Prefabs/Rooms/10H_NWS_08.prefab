@@ -679,7 +679,7 @@ GameObject:
   - component: {fileID: 7292676520912131554}
   - component: {fileID: 4867930549021977433}
   m_Layer: 0
-  m_Name: 10H_NWS_12
+  m_Name: 10H_NWS_08
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

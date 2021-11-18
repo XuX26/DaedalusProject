@@ -730,8 +730,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 1
-  diffucultyLevel: 1
+  diffucultyLevel: 5
   numberOfPossibleDoors: 3
+  isFlexible: 0
 --- !u!1001 &650962691616397632
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1250,7 +1250,7 @@ GameObject:
   - component: {fileID: 7003364015852787991}
   - component: {fileID: 7003364015852787990}
   m_Layer: 0
-  m_Name: 5H_NSW_01
+  m_Name: 5H_NSW_04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1343,9 +1343,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a85ca353678806d46af876b1d2758d6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 0
-  diffucultyLevel: 1
+  type: 1
+  diffucultyLevel: 5
   numberOfPossibleDoors: 3
+  isFlexible: 0
 --- !u!1 &7003364015983213972
 GameObject:
   m_ObjectHideFlags: 0

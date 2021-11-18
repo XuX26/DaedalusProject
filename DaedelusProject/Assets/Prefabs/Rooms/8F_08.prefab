@@ -883,9 +883,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a85ca353678806d46af876b1d2758d6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 0
-  diffucultyLevel: 1
-  numberOfPossibleDoors: 2
+  type: 1
+  diffucultyLevel: 8
+  numberOfPossibleDoors: 4
+  isFlexible: 1
 --- !u!1001 &5490489964032410574
 PrefabInstance:
   m_ObjectHideFlags: 0

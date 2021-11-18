@@ -560,9 +560,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a85ca353678806d46af876b1d2758d6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 0
-  diffucultyLevel: 1
-  numberOfPossibleDoors: 2
+  type: 1
+  diffucultyLevel: 3
+  numberOfPossibleDoors: 3
+  isFlexible: 0
 --- !u!1 &1419342440391603968
 GameObject:
   m_ObjectHideFlags: 0

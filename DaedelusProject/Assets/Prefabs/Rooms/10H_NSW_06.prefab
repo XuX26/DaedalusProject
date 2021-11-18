@@ -671,7 +671,7 @@ GameObject:
   - component: {fileID: 4578345632279243067}
   - component: {fileID: 3143776310704851945}
   m_Layer: 0
-  m_Name: 10H_NSW_03
+  m_Name: 10H_NSW_06
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -765,8 +765,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 1
-  diffucultyLevel: 3
+  diffucultyLevel: 10
   numberOfPossibleDoors: 3
+  isFlexible: 0
 --- !u!1001 &760584164235633811
 PrefabInstance:
   m_ObjectHideFlags: 0

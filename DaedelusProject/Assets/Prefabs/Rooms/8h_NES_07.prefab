@@ -149,7 +149,7 @@ GameObject:
   - component: {fileID: 8446206677393111417}
   - component: {fileID: 3318220929973421835}
   m_Layer: 0
-  m_Name: 8h_NES_11
+  m_Name: 8h_NES_07
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
