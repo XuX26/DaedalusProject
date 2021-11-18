@@ -75,6 +75,13 @@ public class Player : MonoBehaviour {
     [Header("Experience")]
     public float maxExperience = 100;
     public float currentExperience = 0;
+    public float fivePercent = 0;
+    private int nextMilestone = 1;
+
+    private int nbKeyPiece = 0;
+    private bool hasSecretKey = false;
+    bool alreadyHealed = false;
+    bool[] keyPieceUnlocked = new bool[3] { false, false, false };
 
 
     // Input attributes
@@ -105,6 +112,8 @@ public class Player : MonoBehaviour {
     private void Start()
     {
         SetState(STATE.IDLE);
+        fivePercent = (maxExperience * 5) / 100;
+        currentExperience = fivePercent;
     }
 
     // Update is called once per frame
@@ -133,7 +142,12 @@ public class Player : MonoBehaviour {
 					if(room && room != _room)
 					{
                         Door thisDoor = collider.GetComponent<Door>();
-						room.OnEnterRoom();
+                        //TODO : doorLocked But no kay => wall ???
+                        //Enemy on destroy if count <= 0, door become open => change state
+                        //if (Enemy.allEnemies.Count == 0)
+                        //{
+                            room.OnEnterRoom();
+                        //}
 					}
 				}
 			}
@@ -192,11 +206,7 @@ public class Player : MonoBehaviour {
                     Room startRoom = Room.allRooms.Find(x => x.position == Vector2Int.zero);
                     Player.Instance.transform.position = startRoom.GetWorldRoomBounds().center;
                     startRoom.OnEnterRoom();
-                    life = lifeMax;
-                    for (int i = 0; i < life; ++i)
-                    {
-                        Hud.Instance.AddHearth();
-                    }
+                    FullHeal();
                     SetState(STATE.IDLE);
                 }
                 break;
@@ -207,6 +217,15 @@ public class Player : MonoBehaviour {
         if (!CanMove())
         {
             _direction = Vector2.zero;
+        }
+    }
+
+    void FullHeal()
+    {
+        life = lifeMax;
+        for (int i = 0; i < life; ++i)
+        {
+            Hud.Instance.AddHearth();
         }
     }
 
@@ -340,22 +359,152 @@ public class Player : MonoBehaviour {
             {
                 print("there's a problem");
             }
-            InterfaceManager.instance.ShowSelectionPanel(true);
             if (_room != null)
             {
-                if (_room.GetComponent<Configuration>().diffucultyLevel < 3)
+                if (_room.GetComponent<Configuration>().diffucultyLevel < 4)
                 {
-                    currentExperience = Mathf.Clamp(currentExperience - (_room.GetComponent<Configuration>().diffucultyLevel * 10), 0, maxExperience);
+                    float amountToLoose = (((_room.GetComponent<Configuration>().diffucultyLevel * 1 / 3) * fivePercent) - fivePercent) + (fivePercent * 0.5f);
+                    currentExperience = Mathf.Clamp(currentExperience - amountToLoose, 0, maxExperience);
+                    while (currentExperience <= (nextMilestone-1) * (maxExperience * (100 / 13) / 100))
+                    {
+                        RevertReward(nextMilestone);
+                        --nextMilestone;
+                    }
+                    if(nextMilestone == 0)
+                    {
+                        nextMilestone++;
+                    }
                 }
                 else
                 {
-                    currentExperience = Mathf.Clamp(currentExperience + (_room.GetComponent<Configuration>().diffucultyLevel * 10), 0, maxExperience);
+                    currentExperience = Mathf.Clamp(currentExperience + ((_room.GetComponent<Configuration>().diffucultyLevel * (fivePercent * 0.5f)) / 3), 0, maxExperience);
+
+                    while (currentExperience >= nextMilestone * (maxExperience * (100 / 13) / 100))
+                    {
+                        UnlockReward(nextMilestone);
+                        ++nextMilestone;
+                    }
                 }
             }
+            InterfaceManager.instance.ShowSelectionPanel(true);
         }
         DungeonGenerator.instance.currentRoom = room;
         _room = room;
 	}
+
+    void RevertReward(int rewardIndex)
+    {
+        switch (rewardIndex)
+        {
+            case 2:
+            case 6:
+            case 12:
+                attackCooldown += 0.1f;
+                break;
+            case 3:
+            case 7:
+            case 11:
+                //UnlockKeyPiece();
+                break;
+            case 4:
+            case 9:
+                {
+                    lifeMax--;
+                    if(life > lifeMax)
+                    {
+                        life = lifeMax;
+                    }
+                }
+                break;
+            case 5:
+            case 8:
+            case 10:
+                defaultMovement.speedMax -= 0.5f;
+                break;
+            default:
+                print("pranked, there's nothing for you to loose");
+                break;
+        }
+    }
+
+    void UnlockReward(int rewardIndex)
+    {
+        switch (rewardIndex)
+        {
+            case 1:
+                if (!alreadyHealed)
+                {
+                    FullHeal();
+                    alreadyHealed = true;
+                }
+                break;
+            case 2 :
+            case 6 :
+            case 12:
+                attackCooldown -= 0.1f;
+                break;
+            case 3:
+            case 7:
+            case 11:
+                UnlockKeyPiece(rewardIndex);
+                break;
+            case 4:
+            case 9:
+                {
+                    lifeMax++;
+                    FullHeal();
+                }
+                break;
+            case 5:
+            case 8:
+            case 10:
+                defaultMovement.speedMax += 0.5f;
+                break;
+            default:
+                print("pranked, there's nothing for you to win");
+                break;
+        }
+    }
+
+    void UnlockKeyPiece(int index)
+    {
+        switch (index)
+        {
+            case 3:
+                {
+                    if (!keyPieceUnlocked[0])
+                    {
+                        nbKeyPiece++;
+                        keyPieceUnlocked[0] = true;
+                    }
+                }
+                break;
+            case 7:
+                {
+                    if (!keyPieceUnlocked[1])
+                    {
+                        nbKeyPiece++;
+                        keyPieceUnlocked[1] = true;
+                    }
+                }
+                break;
+            case 11:
+                {
+                    if (!keyPieceUnlocked[2])
+                    {
+                        nbKeyPiece++;
+                        keyPieceUnlocked[2] = true;
+                    }
+                    if (nbKeyPiece >= 3)
+                    {
+                        hasSecretKey = true;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

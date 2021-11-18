@@ -257,10 +257,11 @@ MonoBehaviour:
     friction: 12
   attackPrefab: {fileID: 2185964762067344080, guid: fedea07bedcd0dc4b8633fc878bfdc59, type: 3}
   attackSpawnPoint: {fileID: 3061304261252655527}
-  attackCooldown: 0.3
+  attackCooldown: 0.5
   orientation: 1
-  maxExperience: 100
+  maxExperience: 130
   currentExperience: 0
+  fivePercent: 0
   controllerDeadZone: 0.3
 --- !u!210 &3061304262239656673
 SortingGroup:

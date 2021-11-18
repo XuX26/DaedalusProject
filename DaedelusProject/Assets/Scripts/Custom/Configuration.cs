@@ -10,4 +10,5 @@ public class Configuration : MonoBehaviour
     [Range(1, 4)]
     public int numberOfPossibleDoors = 2;
     public bool isFlexible = true;
+
 }
