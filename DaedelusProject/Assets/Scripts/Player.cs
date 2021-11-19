@@ -79,7 +79,7 @@ public class Player : MonoBehaviour {
     private int nextMilestone = 1;
 
     private int nbKeyPiece = 0;
-    public bool hasSecretKey = false;
+    [HideInInspector] public bool hasSecretKey = false;
     bool alreadyHealed = false;
     bool[] keyPieceUnlocked = new bool[3] { false, false, false };
 

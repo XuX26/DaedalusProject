@@ -101,6 +101,12 @@ public class Door : MonoBehaviour {
                 InterfaceManager.instance.ShowEndPanel();
                 Time.timeScale = 0;
                 break;
+            case STATE.SECRET:
+                if (Player.Instance.hasSecretKey)
+                {
+                    SetState(STATE.OPEN);
+                }
+                break;
         }
     }
 
