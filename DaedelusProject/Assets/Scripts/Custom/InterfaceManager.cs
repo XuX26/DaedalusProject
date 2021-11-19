@@ -112,6 +112,19 @@ public class InterfaceManager : MonoBehaviour
                     ChangeOpacity(hasWhatWereLookingFor, iconsPanels[i].GetChild(0).GetComponent<Image>());
 
                     //TODO check for secret doors
+                    hasWhatWereLookingFor = false;
+                    foreach (Transform child in rooms[i].transform.GetChild(0))
+                    {
+                        if (child.CompareTag("Door"))
+                        {
+                            if (child.GetComponent<Door>().State == Door.STATE.SECRET)
+                            {
+                                hasWhatWereLookingFor = true;
+                                break;
+                            }
+                        }
+                    }
+                    ChangeOpacity(hasWhatWereLookingFor, iconsPanels[i].GetChild(1).GetComponent<Image>());
 
                     //Check for healing potion
                     CheckObjectForIcon(i, 2, 1, "Health");
@@ -146,11 +159,11 @@ public class InterfaceManager : MonoBehaviour
     {
         if (isVisible)
         {
-            iconToChange.color = new Color32(255, 255, 255, 255);
+            iconToChange.color = new Color32(218, 212, 94, 255);
         }
         else
         {
-            iconToChange.color = new Color32(255, 255, 255, 100);
+            iconToChange.color = new Color32(112, 108, 95, 75);
         }
     }
 

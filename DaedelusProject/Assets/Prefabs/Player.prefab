@@ -263,6 +263,7 @@ MonoBehaviour:
   currentExperience: 0
   fivePercent: 0
   hasSecretKey: 0
+  attackPower: 1
   controllerDeadZone: 0.3
 --- !u!210 &3061304262239656673
 SortingGroup:
