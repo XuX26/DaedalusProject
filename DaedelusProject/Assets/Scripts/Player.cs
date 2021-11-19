@@ -416,18 +416,13 @@ public class Player : MonoBehaviour {
     {
         switch (rewardIndex)
         {
-            case 2:
-            case 6:
-            case 12:
+            case 3:
+            case 8:
+            case 11:
                 attackCooldown += 0.1f;
                 break;
-            case 3:
             case 7:
-            case 11:
-                //UnlockKeyPiece();
-                break;
-            case 4:
-            case 9:
+            case 10:
                 {
                     lifeMax--;
                     if(life > lifeMax)
@@ -436,9 +431,8 @@ public class Player : MonoBehaviour {
                     }
                 }
                 break;
-            case 5:
-            case 8:
-            case 10:
+            case 1:
+            case 12:
                 defaultMovement.speedMax -= 0.5f;
                 break;
             default:
@@ -451,34 +445,33 @@ public class Player : MonoBehaviour {
     {
         switch (rewardIndex)
         {
-            case 1:
+            case 5:
                 if (!alreadyHealed)
                 {
                     FullHeal();
                     alreadyHealed = true;
                 }
                 break;
-            case 2 :
-            case 6 :
-            case 12:
+            case 3 :
+            case 8 :
+            case 11:
                 attackCooldown -= 0.1f;
                 break;
-            case 3:
-            case 7:
-            case 11:
+            case 2:
+            case 4:
+            case 6:
                 UnlockKeyPiece(rewardIndex);
                 break;
-            case 4:
-            case 9:
+            case 7:
+            case 10:
                 {
                     lifeMax++;
                     FullHeal();
                 }
                 break;
-            case 5:
-            case 8:
-            case 10:
-                defaultMovement.speedMax += 0.5f;
+            case 1:
+            case 12:
+                defaultMovement.speedMax += 1.5f;
                 break;
             default:
                 print("pranked, there's nothing for you to win");
