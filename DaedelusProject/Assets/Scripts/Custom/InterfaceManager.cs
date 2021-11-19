@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class InterfaceManager : MonoBehaviour
 {
@@ -19,6 +20,8 @@ public class InterfaceManager : MonoBehaviour
     [SerializeField] private EventSystem eventSystem;
     GameObject[] rooms = new GameObject[3] { null, null, null };
     [SerializeField] private GameObject endPanel;
+    [SerializeField] private Text scoreText;
+    [SerializeField] private Button restartButton;
 
     private void Awake()
     {
@@ -167,7 +170,14 @@ public class InterfaceManager : MonoBehaviour
 
     public void ShowEndPanel()
     {
+        restartButton.Select();
+        scoreText.text = "Score : " + Player.Instance.currentExperience;
         endPanel.SetActive(true);
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(0);
     }
 
 }

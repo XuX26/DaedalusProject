@@ -372,6 +372,7 @@ public class DungeonGenerator : MonoBehaviour
             roomsSelected[i] = null;
         }
         List<GameObject> possibleRooms = new List<GameObject>();
+        Configuration config;
         switch (node.type)
         {
             case NodeType.START:
@@ -495,15 +496,16 @@ public class DungeonGenerator : MonoBehaviour
             case NodeType.DEFAULT:
                 foreach (GameObject thisRoom in roomPrefabs)
                 {
-                    if (thisRoom != prevRoom && thisRoom.GetComponent<Configuration>().type == NodeType.DEFAULT)
+                    config = thisRoom.GetComponent<Configuration>();
+                    if (thisRoom != prevRoom && config.type == NodeType.DEFAULT)
                     {
-                        if (thisRoom.GetComponent<Configuration>().isFlexible)
+                        if (config.isFlexible && config.hasKey == node.haveKey)
                         {
                             possibleRooms.Add(thisRoom);
                         }
                         else
                         {
-                            if (node.links.Count <= thisRoom.GetComponent<Configuration>().numberOfPossibleDoors)
+                            if (node.links.Count <= config.numberOfPossibleDoors && config.hasKey == node.haveKey)
                             {
                                 Dictionary<LinkPos, bool> doorsToCheck = new Dictionary<LinkPos, bool>();
 
