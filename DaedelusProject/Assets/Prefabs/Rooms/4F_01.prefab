@@ -724,6 +724,7 @@ MonoBehaviour:
   diffucultyLevel: 4
   numberOfPossibleDoors: 4
   isFlexible: 1
+  hasKey: 1
 --- !u!1001 &509730370124239312
 PrefabInstance:
   m_ObjectHideFlags: 0
