@@ -378,15 +378,17 @@ public class DungeonGenerator : MonoBehaviour
             case NodeType.START:
                 foreach (GameObject thisRoom in roomPrefabs)
                 {
-                    if (thisRoom != prevRoom && thisRoom.GetComponent<Configuration>().type == NodeType.START)
+                    config = thisRoom.GetComponent<Configuration>();
+
+                    if (thisRoom != prevRoom && config.type == NodeType.START)
                     {
-                        if (thisRoom.GetComponent<Configuration>().isFlexible)
+                        if (config.isFlexible && config.hasKey == node.haveKey)
                         {
                             possibleRooms.Add(thisRoom);
                         }
                         else
                         {
-                            if(node.links.Count == thisRoom.GetComponent<Configuration>().numberOfPossibleDoors)
+                            if(node.links.Count == config.numberOfPossibleDoors)
                             {
                                 Dictionary<LinkPos, bool> doorsToCheck = new Dictionary<LinkPos, bool>();
 
@@ -596,15 +598,16 @@ public class DungeonGenerator : MonoBehaviour
             case NodeType.END:
                 foreach (GameObject thisRoom in roomPrefabs)
                 {
-                    if (thisRoom.GetComponent<Configuration>().type == NodeType.END)
+                    config = thisRoom.GetComponent<Configuration>();
+                    if (config.type == NodeType.END)
                     {
-                        if (thisRoom.GetComponent<Configuration>().isFlexible)
+                        if (config.isFlexible && config.hasKey == node.haveKey)
                         {
                             possibleRooms.Add(thisRoom);
                         }
                         else
                         {
-                            if (node.links.Count <= thisRoom.GetComponent<Configuration>().numberOfPossibleDoors)
+                            if (node.links.Count <= config.numberOfPossibleDoors)
                             {
                                 Dictionary<LinkPos, bool> doorsToCheck = new Dictionary<LinkPos, bool>();
 
