@@ -691,6 +691,8 @@ MonoBehaviour:
   openGo: {fileID: 6844304121599950607}
   wallGo: {fileID: 2728619360878214345}
   secretGo: {fileID: 6924460339640911288}
+  endGo: {fileID: 0}
+  previousState: 0
 --- !u!1 &3780655934186784343
 GameObject:
   m_ObjectHideFlags: 0
@@ -792,6 +794,8 @@ MonoBehaviour:
   openGo: {fileID: 6844304121322566710}
   wallGo: {fileID: 2728619360619771888}
   secretGo: {fileID: 6924460339363532417}
+  endGo: {fileID: 0}
+  previousState: 0
 --- !u!1 &6844304121322566710
 GameObject:
   m_ObjectHideFlags: 0
@@ -1288,7 +1292,7 @@ MonoBehaviour:
   m_tilemaps:
   - {fileID: 7003364017736644894}
   - {fileID: 7003364015983213979}
-  m_selectedIndex: 1
+  m_selectedIndex: 0
   m_unselectedColorMultiplier: 1
   m_defaultTilemapWindowVisible: 0
   m_displayTilemapRList: 1

@@ -101,6 +101,8 @@ MonoBehaviour:
   openGo: {fileID: 6938417073968396910}
   wallGo: {fileID: 1977061676514998696}
   secretGo: {fileID: 6821106502594658521}
+  endGo: {fileID: 0}
+  previousState: 0
 --- !u!1 &1131797337571929055
 GameObject:
   m_ObjectHideFlags: 0
@@ -424,6 +426,8 @@ MonoBehaviour:
   openGo: {fileID: 8399540003837306905}
   wallGo: {fileID: 1131797337571929055}
   secretGo: {fileID: 5364469443265090222}
+  endGo: {fileID: 0}
+  previousState: 0
 --- !u!1 &2345766505126255224
 GameObject:
   m_ObjectHideFlags: 0
