@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class DungeonGenerator : MonoBehaviour
 {
@@ -28,7 +31,22 @@ public class DungeonGenerator : MonoBehaviour
     private void Start()
     {
         //CreateDungeon(DungeonManager.instance.nbrCriticalRooms);
-        CreateDungeonBis(DungeonManager.instance.nbrCriticalRooms);
+
+        bool dungeonCreated = false;
+        while (dungeonCreated == false)
+        {
+            try
+            {
+                CreateDungeonBis(DungeonManager.instance.nbrCriticalRooms);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning(e);
+                DungeonManager.instance.allNodes.Clear();
+                continue;
+            }
+            dungeonCreated = true;
+        }
     }
 
     public void CreateDungeon(int nbrRoom)
@@ -71,11 +89,12 @@ public class DungeonGenerator : MonoBehaviour
         for (int i = 1; i < nbrRoom - 1; ++i)
         {
             lastNode = CreateNodeBis(NodeType.DEFAULT, lastNode);
-            if (lastNode == null) // need exception ?!
-                ReGenerateDungeon(new string("Attempt to create a critical node failed"));
+            if (lastNode == null)
+                throw new Exception(message: "Attempt to create a critical node FAILED (freeLinks.Count was certainly == 0)");
         }
-        
-        CreateNodeBis(NodeType.END, lastNode);
+
+        if (CreateNodeBis(NodeType.END, lastNode) == null)
+            throw new Exception(message: "Attempt to create the last critical Node FAILED (freeLinks.Count was certainly == 0)");
     }
     
     void CreateAllSidePathBis()
@@ -128,6 +147,10 @@ public class DungeonGenerator : MonoBehaviour
             if (currentCriticalNode.type == NodeType.END)
                 Debug.Log("Is the last Node, criticalNodeLeft = " + criticalNodeLeft);
         }
+        
+        if(lockLeft > 0 || secretRoomCreated == false)
+            throw new Exception(message: "SidePath creation didn't succeed");
+
     }
 
     void InitRooms()
@@ -193,19 +216,19 @@ public class DungeonGenerator : MonoBehaviour
             switch (freeLink)
             {
                 case 0: //UP
-                    toCheck.y++;// = new Vector2Int(prevPos.x, prevPos.y + 1);
+                    toCheck.y++;
                     nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out sideNode);
                     break;
                 case 1: // DOWN
-                    toCheck.y--;// = new Vector2Int(prevPos.x, prevPos.y - 1);
+                    toCheck.y--;
                     nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out sideNode);
                     break;
                 case 2: // LEFT
-                    toCheck.x--;// = new Vector2Int(prevPos.x - 1, prevPos.y);
+                    toCheck.x--;
                     nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out sideNode);
                     break;
                 case 3: // RIGHT
-                    toCheck.x++;// = new Vector2Int(prevPos.x + 1, prevPos.y);
+                    toCheck.x++;
                     nodeExists = DungeonManager.instance.allNodes.TryGetValue(toCheck, out sideNode);
                     break;
             }
