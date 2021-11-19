@@ -332,6 +332,8 @@ MonoBehaviour:
   type: 1
   diffucultyLevel: 4
   numberOfPossibleDoors: 4
+  isFlexible: 1
+  hasKey: 1
 --- !u!1 &5015980710572855230
 GameObject:
   m_ObjectHideFlags: 0
