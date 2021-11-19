@@ -81,6 +81,11 @@ public class InterfaceManager : MonoBehaviour
         if (show)
         {
             DungeonGenerator.instance.ChooseThreeRooms(ref rooms, DungeonManager.instance.currentNode);
+
+            roomCards[0].SetActive(true);
+            roomCards[1].SetActive(true);
+            roomCards[2].SetActive(true);
+
             for (int i = 0; i < roomCards.Length; ++i)
             {
                 if (rooms[i] != null)
@@ -120,6 +125,7 @@ public class InterfaceManager : MonoBehaviour
                 else
                 {
                     roomCards[i].transform.GetChild(0).GetComponent<Text>().text = "room unavailable";
+                    roomCards[i].SetActive(false);
                 }
             }
             ShowPossibleExperience(0);

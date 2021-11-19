@@ -695,6 +695,8 @@ MonoBehaviour:
   openGo: {fileID: 6904603469394728589}
   wallGo: {fileID: 2663825072109720907}
   secretGo: {fileID: 7003468977629621306}
+  endGo: {fileID: 0}
+  previousState: 0
 --- !u!1 &6904603469394728589
 GameObject:
   m_ObjectHideFlags: 0
