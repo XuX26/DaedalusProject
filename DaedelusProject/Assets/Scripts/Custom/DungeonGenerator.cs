@@ -480,7 +480,7 @@ public class DungeonGenerator : MonoBehaviour
                         }
                         else
                         {
-                            if (node.links.Count == thisRoom.GetComponent<Configuration>().numberOfPossibleDoors)
+                            if (node.links.Count <= thisRoom.GetComponent<Configuration>().numberOfPossibleDoors)
                             {
                                 Dictionary<LinkPos, bool> doorsToCheck = new Dictionary<LinkPos, bool>();
 
@@ -488,25 +488,23 @@ public class DungeonGenerator : MonoBehaviour
                                 {
                                     doorsToCheck.Add(node.links[i].position, false);
                                 }
-
                                 for (int i = 0; i < thisRoom.transform.GetChild(0).childCount; i++)
                                 {
                                     if (thisRoom.transform.GetChild(0).GetChild(i).CompareTag("Door"))
                                     {
                                         bool hasGoodDoor = false;
                                         bool outcome = false;
-                                        bool shouldStop = false;
                                         Utils.ORIENTATION doorOrient = Utils.ORIENTATION.NONE;
 
-                                        if (thisRoom.transform.GetChild(0).GetChild(i).position.x >= 10)
+                                        if (thisRoom.transform.GetChild(0).GetChild(i).localPosition.x >= 10)
                                         {
                                             doorOrient = Utils.ORIENTATION.EAST;
                                         }
-                                        else if (thisRoom.transform.GetChild(0).GetChild(i).position.x <= 1)
+                                        else if (thisRoom.transform.GetChild(0).GetChild(i).localPosition.x <= 1)
                                         {
                                             doorOrient = Utils.ORIENTATION.WEST;
                                         }
-                                        else if (thisRoom.transform.GetChild(0).GetChild(i).position.y >= 5)
+                                        else if (thisRoom.transform.GetChild(0).GetChild(i).localPosition.y >= 5)
                                         {
                                             doorOrient = Utils.ORIENTATION.NORTH;
                                         }
@@ -519,68 +517,51 @@ public class DungeonGenerator : MonoBehaviour
                                         switch (doorOrient)
                                         {
                                             case Utils.ORIENTATION.NONE:
-                                                shouldStop = true;
                                                 break;
                                             case Utils.ORIENTATION.NORTH:
                                                 hasGoodDoor = doorsToCheck.TryGetValue(LinkPos.UP, out outcome);
-                                                if (!hasGoodDoor)
-                                                {
-                                                    shouldStop = true;
-                                                }
-                                                else
+                                                if (hasGoodDoor)
                                                 {
                                                     doorsToCheck[LinkPos.UP] = true;
                                                 }
                                                 break;
                                             case Utils.ORIENTATION.EAST:
                                                 hasGoodDoor = doorsToCheck.TryGetValue(LinkPos.RIGHT, out outcome);
-                                                if (!hasGoodDoor)
+                                                if (hasGoodDoor)
                                                 {
-                                                    shouldStop = true;
-                                                }
-                                                else
-                                                {
-                                                    doorsToCheck[LinkPos.UP] = true;
+                                                    doorsToCheck[LinkPos.RIGHT] = true;
                                                 }
                                                 break;
                                             case Utils.ORIENTATION.SOUTH:
                                                 hasGoodDoor = doorsToCheck.TryGetValue(LinkPos.DOWN, out outcome);
-                                                if (!hasGoodDoor)
+                                                if (hasGoodDoor)
                                                 {
-                                                    shouldStop = true;
-                                                }
-                                                else
-                                                {
-                                                    doorsToCheck[LinkPos.UP] = true;
+                                                    doorsToCheck[LinkPos.DOWN] = true;
                                                 }
                                                 break;
                                             case Utils.ORIENTATION.WEST:
                                                 hasGoodDoor = doorsToCheck.TryGetValue(LinkPos.LEFT, out outcome);
-                                                if (!hasGoodDoor)
+                                                if (hasGoodDoor)
                                                 {
-                                                    shouldStop = true;
-                                                }
-                                                else
-                                                {
-                                                    doorsToCheck[LinkPos.UP] = true;
+                                                    doorsToCheck[LinkPos.LEFT] = true;
                                                 }
                                                 break;
                                             default:
                                                 break;
                                         }
-                                        if (shouldStop)
-                                        {
-                                            break;
-                                        }
-                                        foreach (bool hasDoor in doorsToCheck.Values)
-                                        {
-                                            if (!hasDoor)
-                                            {
-                                                break;
-                                            }
-                                        }
-                                        possibleRooms.Add(thisRoom);
                                     }
+                                }
+                                bool isPossible = true;
+                                foreach (bool hasDoor in doorsToCheck.Values)
+                                {
+                                    if (!hasDoor)
+                                    {
+                                        isPossible = false;
+                                    }
+                                }
+                                if (isPossible)
+                                {
+                                    possibleRooms.Add(thisRoom);
                                 }
                             }
                         }
@@ -598,7 +579,7 @@ public class DungeonGenerator : MonoBehaviour
                         }
                         else
                         {
-                            if (node.links.Count == thisRoom.GetComponent<Configuration>().numberOfPossibleDoors)
+                            if (node.links.Count <= thisRoom.GetComponent<Configuration>().numberOfPossibleDoors)
                             {
                                 Dictionary<LinkPos, bool> doorsToCheck = new Dictionary<LinkPos, bool>();
 
@@ -606,25 +587,24 @@ public class DungeonGenerator : MonoBehaviour
                                 {
                                     doorsToCheck.Add(node.links[i].position, false);
                                 }
-
                                 for (int i = 0; i < thisRoom.transform.GetChild(0).childCount; i++)
                                 {
                                     if (thisRoom.transform.GetChild(0).GetChild(i).CompareTag("Door"))
                                     {
                                         bool hasGoodDoor = false;
                                         bool outcome = false;
-                                        bool shouldStop = false;
+                                        //bool shouldStop = false;
                                         Utils.ORIENTATION doorOrient = Utils.ORIENTATION.NONE;
 
-                                        if (thisRoom.transform.GetChild(0).GetChild(i).position.x >= 10)
+                                        if (thisRoom.transform.GetChild(0).GetChild(i).localPosition.x >= 10)
                                         {
                                             doorOrient = Utils.ORIENTATION.EAST;
                                         }
-                                        else if (thisRoom.transform.GetChild(0).GetChild(i).position.x <= 1)
+                                        else if (thisRoom.transform.GetChild(0).GetChild(i).localPosition.x <= 1)
                                         {
                                             doorOrient = Utils.ORIENTATION.WEST;
                                         }
-                                        else if (thisRoom.transform.GetChild(0).GetChild(i).position.y >= 5)
+                                        else if (thisRoom.transform.GetChild(0).GetChild(i).localPosition.y >= 5)
                                         {
                                             doorOrient = Utils.ORIENTATION.NORTH;
                                         }
@@ -637,68 +617,51 @@ public class DungeonGenerator : MonoBehaviour
                                         switch (doorOrient)
                                         {
                                             case Utils.ORIENTATION.NONE:
-                                                shouldStop = true;
                                                 break;
                                             case Utils.ORIENTATION.NORTH:
                                                 hasGoodDoor = doorsToCheck.TryGetValue(LinkPos.UP, out outcome);
-                                                if (!hasGoodDoor)
-                                                {
-                                                    shouldStop = true;
-                                                }
-                                                else
+                                                if (hasGoodDoor)
                                                 {
                                                     doorsToCheck[LinkPos.UP] = true;
                                                 }
                                                 break;
                                             case Utils.ORIENTATION.EAST:
                                                 hasGoodDoor = doorsToCheck.TryGetValue(LinkPos.RIGHT, out outcome);
-                                                if (!hasGoodDoor)
+                                                if (hasGoodDoor)
                                                 {
-                                                    shouldStop = true;
-                                                }
-                                                else
-                                                {
-                                                    doorsToCheck[LinkPos.UP] = true;
+                                                    doorsToCheck[LinkPos.RIGHT] = true;
                                                 }
                                                 break;
                                             case Utils.ORIENTATION.SOUTH:
                                                 hasGoodDoor = doorsToCheck.TryGetValue(LinkPos.DOWN, out outcome);
-                                                if (!hasGoodDoor)
+                                                if (hasGoodDoor)
                                                 {
-                                                    shouldStop = true;
-                                                }
-                                                else
-                                                {
-                                                    doorsToCheck[LinkPos.UP] = true;
+                                                    doorsToCheck[LinkPos.DOWN] = true;
                                                 }
                                                 break;
                                             case Utils.ORIENTATION.WEST:
                                                 hasGoodDoor = doorsToCheck.TryGetValue(LinkPos.LEFT, out outcome);
-                                                if (!hasGoodDoor)
+                                                if (hasGoodDoor)
                                                 {
-                                                    shouldStop = true;
-                                                }
-                                                else
-                                                {
-                                                    doorsToCheck[LinkPos.UP] = true;
+                                                    doorsToCheck[LinkPos.LEFT] = true;
                                                 }
                                                 break;
                                             default:
                                                 break;
                                         }
-                                        if (shouldStop)
-                                        {
-                                            break;
-                                        }
-                                        foreach (bool hasDoor in doorsToCheck.Values)
-                                        {
-                                            if (!hasDoor)
-                                            {
-                                                break;
-                                            }
-                                        }
-                                        possibleRooms.Add(thisRoom);
                                     }
+                                }
+                                bool isPossible = true;
+                                foreach (bool hasDoor in doorsToCheck.Values)
+                                {
+                                    if (!hasDoor)
+                                    {
+                                        isPossible = false;
+                                    }
+                                }
+                                if (isPossible)
+                                {
+                                    possibleRooms.Add(thisRoom);
                                 }
                             }
                         }
