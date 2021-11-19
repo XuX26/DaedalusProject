@@ -1739,8 +1739,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ea1fe7a0333a914089d428ca21254f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nbrCriticalRooms: 3
-  nbrLock: 1
+  nbrCriticalRooms: 12
+  nbrLock: 2
   coefSidePath: 0
   maxSideSizeCoef: 0.25
   minSideSize: 2

@@ -142,12 +142,7 @@ public class Player : MonoBehaviour {
 					if(room && room != _room)
 					{
                         Door thisDoor = collider.GetComponent<Door>();
-                        //TODO : doorLocked But no kay => wall ???
-                        //Enemy on destroy if count <= 0, door become open => change state
-                        //if (Enemy.allEnemies.Count == 0)
-                        //{
                             room.OnEnterRoom();
-                        //}
 					}
 				}
 			}
@@ -205,6 +200,7 @@ public class Player : MonoBehaviour {
                     EndBlink();
                     Room startRoom = Room.allRooms.Find(x => x.position == Vector2Int.zero);
                     Player.Instance.transform.position = startRoom.GetWorldRoomBounds().center;
+                    DungeonGenerator.instance.ReturnDoorToState();
                     startRoom.OnEnterRoom();
                     FullHeal();
                     SetState(STATE.IDLE);
@@ -389,7 +385,27 @@ public class Player : MonoBehaviour {
             }
             InterfaceManager.instance.ShowSelectionPanel(true);
         }
+        else
+        {
+            foreach (Transform child in room.transform.GetChild(1))
+            {
+                if (child.CompareTag("Enemy"))
+                {
+                    transform.position += (room.GetWorldRoomBounds().center - _room.GetWorldRoomBounds().center).normalized;
 
+                    foreach (Transform floor in room.transform.GetChild(0))
+                    {
+                        if (floor.CompareTag("Door"))
+                        {
+                            floor.GetComponent<Door>().previousState = floor.GetComponent<Door>().State;
+                            floor.GetComponent<Door>().SetState(Door.STATE.WALL);
+                        }
+                    }
+
+                    break;
+                }
+            }
+        }
         DungeonGenerator.instance.currentRoom = room;
         _room = room;
 	}
