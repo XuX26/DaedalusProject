@@ -234,13 +234,13 @@ public class Enemy : MonoBehaviour
     }
 
     // Applyhit is called when enemy touches a enemy hitbox.
-    private void ApplyHit(Attack attack)
+    private void ApplyHit(Attack attack, int lifeToLoose)
     {
         if (Time.time - _lastHitTime < invincibilityDuration)
             return;
         _lastHitTime = Time.time;
 
-        life -= 1;
+        life -= lifeToLoose;
         if (life <= 0)
         {
             SetState(STATE.DEAD);
@@ -320,7 +320,7 @@ public class Enemy : MonoBehaviour
         {
             // Collided with hitbox
             Attack attack = collision.gameObject.GetComponent<Attack>();
-            ApplyHit(attack);
+            ApplyHit(attack, attack.damages);
         }
     }
 }

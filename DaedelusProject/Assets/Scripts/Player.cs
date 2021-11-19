@@ -82,6 +82,7 @@ public class Player : MonoBehaviour {
     [HideInInspector] public bool hasSecretKey = false;
     bool alreadyHealed = false;
     bool[] keyPieceUnlocked = new bool[3] { false, false, false };
+    public int attackPower = 1;
 
 
     // Input attributes
@@ -264,7 +265,8 @@ public class Player : MonoBehaviour {
 
         // transform used for spawn is attackSpawnPoint.transform if attackSpawnPoint is not null. Else it's transform.
         Transform spawnTransform = attackSpawnPoint ? attackSpawnPoint.transform : transform;
-        GameObject.Instantiate(attackPrefab, spawnTransform.position, spawnTransform.rotation);
+        Attack attack = Instantiate(attackPrefab, spawnTransform.position, spawnTransform.rotation).GetComponent<Attack>();
+        attack.damages = attackPower;
     }
 
     // Applyhit is called when player touches an enemy hitbox or any hazard.
