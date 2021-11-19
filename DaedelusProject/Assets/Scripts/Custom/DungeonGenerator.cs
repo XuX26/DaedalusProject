@@ -157,7 +157,7 @@ public class DungeonGenerator : MonoBehaviour
         dir = (LinkPos)nodeFrom.freeLinks[randIndex];
         Vector2Int newNodePos = GetPosOfNextNode(nodeFrom.position, (int)dir);
         newNode = new Node(newNodePos, type);
-        LinkTwoNode(nodeFrom, newNode, dir);
+        LinkTwoNode(nodeFrom, newNode, dir, type == NodeType.SECRET);
         newNode.type = type;
             
         DungeonManager.instance.allNodes.Add(newNode.position, newNode);
@@ -274,6 +274,8 @@ public class DungeonGenerator : MonoBehaviour
                 room.transform.GetChild(0).GetChild(i).GetComponent<Door>().SetOrientation();
             }
         }
+
+        Door.STATE doorState;
         foreach (Link doorPos in node.links)
         {
             switch (doorPos.position)
@@ -283,7 +285,8 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         if (curDoor.Orientation == Utils.ORIENTATION.NORTH)
                         {
-                            curDoor.SetState(doorPos.hasLock? Door.STATE.CLOSED : Door.STATE.OPEN);
+                            doorState = doorPos.hasLock ? Door.STATE.CLOSED : Door.STATE.OPEN;
+                            curDoor.SetState(doorPos.isSecret ? Door.STATE.SECRET : doorState);
                         }
                     }
                     break;
@@ -292,7 +295,8 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         if (curDoor.Orientation == Utils.ORIENTATION.SOUTH)
                         {
-                            curDoor.SetState(doorPos.hasLock? Door.STATE.CLOSED : Door.STATE.OPEN);
+                            doorState = doorPos.hasLock ? Door.STATE.CLOSED : Door.STATE.OPEN;
+                            curDoor.SetState(doorPos.isSecret ? Door.STATE.SECRET : doorState);
                         }
                     }
                     break;
@@ -301,7 +305,8 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         if (curDoor.Orientation == Utils.ORIENTATION.WEST)
                         {
-                            curDoor.SetState(doorPos.hasLock? Door.STATE.CLOSED : Door.STATE.OPEN);
+                            doorState = doorPos.hasLock ? Door.STATE.CLOSED : Door.STATE.OPEN;
+                            curDoor.SetState(doorPos.isSecret ? Door.STATE.SECRET : doorState);
                         }
                     }
                     break;
@@ -310,7 +315,8 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         if (curDoor.Orientation == Utils.ORIENTATION.EAST)
                         {
-                            curDoor.SetState(doorPos.hasLock? Door.STATE.CLOSED : Door.STATE.OPEN);
+                            doorState = doorPos.hasLock ? Door.STATE.CLOSED : Door.STATE.OPEN;
+                            curDoor.SetState(doorPos.isSecret ? Door.STATE.SECRET : doorState);
                         }
                     }
                     break;

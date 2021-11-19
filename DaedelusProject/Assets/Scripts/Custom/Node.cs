@@ -37,15 +37,6 @@ public class Node
         freeLinks.Remove((int)dir);
         return newLink;
     }
-    
-    // public int? GetRdmFreeLinkPos()
-    // {
-    //     if (freeLinks.Count == 0)
-    //         return null;
-    //
-    //     return Random.Range(0, freeLinks.Count);
-    //
-    // }
 }
 
 public enum NodeType
